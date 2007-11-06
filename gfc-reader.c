@@ -23,3 +23,15 @@
 
 #include "gfc-reader.h"
 
+G_DEFINE_TYPE (GfcReader, gfc_reader, G_TYPE_OBJECT);
+
+static void
+gfc_reader_init (GfcReader* self)
+{
+}
+
+static void
+gfc_reader_class_init (GfcReaderClass* self_class)
+{
+}
+

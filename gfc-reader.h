@@ -24,5 +24,27 @@
 #ifndef GFC_READER_H
 #define GFC_READER_H
 
+#include <glib-object.h>
+
+G_BEGIN_DECLS
+
+typedef struct _GfcReader        GfcReader;
+typedef struct _GfcReaderPrivate GfcReaderPrivate;
+typedef struct _GfcReaderClass   GfcReaderClass;
+
+#define GFC_TYPE_READER         (gfc_reader_get_type ())
+
+GType gfc_reader_get_type (void);
+
+struct _GfcReader {
+	GObject           base_instance;
+	GfcReaderPrivate* _private;
+};
+
+struct _GfcReaderClass {
+	GObjectClass      base_class;
+};
+
+G_END_DECLS
 
 #endif /* !GFC_READER_H */
