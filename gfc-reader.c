@@ -23,15 +23,23 @@
 
 #include "gfc-reader.h"
 
+struct _GfcReaderPrivate {
+	GIOChannel* channel;
+};
+
 G_DEFINE_TYPE (GfcReader, gfc_reader, G_TYPE_OBJECT);
 
 static void
 gfc_reader_init (GfcReader* self)
 {
+	self->_private = G_TYPE_INSTANCE_GET_PRIVATE (self,
+						      GFC_TYPE_READER,
+						      GfcReaderPrivate);
 }
 
 static void
 gfc_reader_class_init (GfcReaderClass* self_class)
 {
+	g_type_class_add_private (self_class, sizeof (GfcReaderPrivate));
 }
 
