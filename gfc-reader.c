@@ -171,6 +171,14 @@ gfc_reader_class_init (GfcReaderClass* self_class)
 	g_type_class_add_private (self_class, sizeof (GfcReaderPrivate));
 }
 
+GfcReader*
+gfc_reader_new (gint file_descriptor)
+{
+	return g_object_new (GFC_TYPE_READER,
+			     "file-descriptor", file_descriptor,
+			     NULL);
+}
+
 void
 gfc_reader_flush (GfcReader* self)
 {

@@ -40,6 +40,7 @@ typedef struct _GfcReaderClass   GfcReaderClass;
 #define GFC_READER_GET_CLASS(c) (G_TYPE_INSTANCE_GET_CLASS ((i), GFC_TYPE_READER, GfcReaderClass))
 
 GType       gfc_reader_get_type    (void);
+GfcReader*  gfc_reader_new         (gint             file_descriptor);
 GIOChannel* gfc_reader_get_channel (GfcReader const* self);
 void        gfc_reader_flush       (GfcReader      * self);
 
