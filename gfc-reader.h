@@ -33,6 +33,11 @@ typedef struct _GfcReaderPrivate GfcReaderPrivate;
 typedef struct _GfcReaderClass   GfcReaderClass;
 
 #define GFC_TYPE_READER         (gfc_reader_get_type ())
+#define GFC_READER(i)           (G_TYPE_CHECK_INSTANCE_CAST ((i), GFC_TYPE_READER, GfcReader))
+#define GFC_READER_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), GFC_TYPE_READER, GfcReaderClass))
+#define GFC_IS_READER(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), GFC_TYPE_READER))
+#define GFC_IS_READER_CLASS(i)  (G_TYPE_CHECK_CLASS_TYPE ((c), GFC_TYPE_READER))
+#define GFC_READER_GET_CLASS(c) (G_TYPE_INSTANCE_GET_CLASS ((i), GFC_TYPE_READER, GfcReaderClass))
 
 GType gfc_reader_get_type (void);
 

@@ -24,7 +24,13 @@
 #include "gfc-reader.h"
 
 struct _GfcReaderPrivate {
+	gint        file_descriptor;
 	GIOChannel* channel;
+};
+
+enum {
+	PROP_0,
+	PROP_FILE_DESCRIPTOR
 };
 
 G_DEFINE_TYPE (GfcReader, gfc_reader, G_TYPE_OBJECT);
@@ -38,8 +44,54 @@ gfc_reader_init (GfcReader* self)
 }
 
 static void
+reader_get_property (GObject   * object,
+		     guint       prop_id,
+		     GValue    * value,
+		     GParamSpec* pspec)
+{
+	GfcReader* self = GFC_READER (object);
+
+	switch (prop_id) {
+	case PROP_FILE_DESCRIPTOR:
+		g_value_set_int (value, self->_private->file_descriptor);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+reader_set_property (GObject     * object,
+		     guint         prop_id,
+		     GValue const* value,
+		     GParamSpec  * pspec)
+{
+	GfcReader* self = GFC_READER (object);
+
+	switch (prop_id) {
+	case PROP_FILE_DESCRIPTOR:
+		self->_private->file_descriptor = g_value_get_int (value);
+		g_object_notify (object, "file-descriptor");
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gfc_reader_class_init (GfcReaderClass* self_class)
 {
+	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
+
+	object_class->get_property = reader_get_property;
+	object_class->set_property = reader_set_property;
+
+	g_object_class_install_property (object_class, PROP_FILE_DESCRIPTOR,
+					 g_param_spec_int ("file-descriptor", "file-descriptor", "file-descriptor",
+							   0, G_MAXINT, 0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 	g_type_class_add_private (self_class, sizeof (GfcReaderPrivate));
 }
 
