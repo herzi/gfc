@@ -41,6 +41,7 @@ typedef struct _GfcReaderClass   GfcReaderClass;
 
 GType       gfc_reader_get_type    (void);
 GIOChannel* gfc_reader_get_channel (GfcReader const* self);
+void        gfc_reader_flush       (GfcReader      * self);
 
 struct _GfcReader {
 	GObject           base_instance;

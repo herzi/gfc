@@ -26,12 +26,20 @@
 struct _GfcReaderPrivate {
 	gint        file_descriptor;
 	GIOChannel* channel;
+	guint       io_handler;
 };
 
 enum {
 	PROP_0,
 	PROP_FILE_DESCRIPTOR
 };
+
+enum {
+	READ_LINE,
+	N_SIGNALS
+};
+
+static guint signals[N_SIGNALS] = {0};
 
 G_DEFINE_TYPE (GfcReader, gfc_reader, G_TYPE_OBJECT);
 
@@ -43,6 +51,45 @@ gfc_reader_init (GfcReader* self)
 						      GfcReaderPrivate);
 }
 
+static gboolean
+io_watch_cb (GIOChannel  * channel,
+	     GIOCondition  condition,
+	     gpointer      data)
+{
+	GString  * buffer = g_string_new ("");
+	GIOStatus  state = G_IO_STATUS_NORMAL;
+	GfcReader* self = GFC_READER (data);
+
+	while (state == G_IO_STATUS_NORMAL) {
+		gsize delim = 0;
+
+		// FIXME: add GError here
+		state = g_io_channel_read_line_string (channel, buffer, &delim, NULL);
+		switch (state) {
+		case G_IO_STATUS_NORMAL:
+			g_string_set_size (buffer, delim);
+			g_signal_emit (self,
+				       signals[READ_LINE],
+				       0,
+				       buffer->str); // FIXME: emit by signal id
+			g_string_set_size (buffer, 0);
+			break;
+		case G_IO_STATUS_AGAIN:
+			/* no data right now... try again later */
+			break;
+		case G_IO_STATUS_ERROR:
+		case G_IO_STATUS_EOF:
+			// FIXME: call g_source_remove() here instead of flush()?
+			self->_private->io_handler = 0;
+			g_string_free (buffer, TRUE);
+			return FALSE;
+		}
+	}
+
+	g_string_free (buffer, TRUE);
+	return TRUE;
+}
+
 static void
 reader_constructed (GObject* object)
 {
@@ -51,6 +98,11 @@ reader_constructed (GObject* object)
 	self->_private->channel = g_io_channel_unix_new (self->_private->file_descriptor);
 	g_io_channel_set_flags (self->_private->channel, G_IO_FLAG_NONBLOCK, NULL); // FIXME: return value and GError
 	g_io_channel_set_close_on_unref (self->_private->channel, TRUE);
+
+	self->_private->io_handler = g_io_add_watch (gfc_reader_get_channel (GFC_READER (self)),
+						     G_IO_IN,
+						     io_watch_cb,
+						     self);
 
 	if (G_OBJECT_CLASS (gfc_reader_parent_class)->constructed) {
 		G_OBJECT_CLASS (gfc_reader_parent_class)->constructed (object);
@@ -107,7 +159,32 @@ gfc_reader_class_init (GfcReaderClass* self_class)
 					 g_param_spec_int ("file-descriptor", "file-descriptor", "file-descriptor",
 							   0, G_MAXINT, 0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	signals[READ_LINE] = g_signal_new ("read-line",
+					   GFC_TYPE_READER,
+					   0, 0,
+					   NULL, NULL,
+					   g_cclosure_marshal_VOID__STRING,
+					   G_TYPE_NONE,
+					   1,
+					   G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
+
 	g_type_class_add_private (self_class, sizeof (GfcReaderPrivate));
+}
+
+void
+gfc_reader_flush (GfcReader* self)
+{
+	g_return_if_fail (GFC_IS_READER (self));
+
+	if (G_UNLIKELY (!self->_private->io_handler)) {
+		return;
+	}
+
+	g_source_remove (self->_private->io_handler);
+
+	io_watch_cb (self->_private->channel,
+		     G_IO_IN,
+		     self); // parse trailing lines
 }
 
 GIOChannel*
