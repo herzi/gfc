@@ -44,6 +44,20 @@ gfc_reader_init (GfcReader* self)
 }
 
 static void
+reader_constructed (GObject* object)
+{
+	GfcReader* self = GFC_READER (object);
+
+	self->_private->channel = g_io_channel_unix_new (self->_private->file_descriptor);
+	g_io_channel_set_flags (self->_private->channel, G_IO_FLAG_NONBLOCK, NULL); // FIXME: return value and GError
+	g_io_channel_set_close_on_unref (self->_private->channel, TRUE);
+
+	if (G_OBJECT_CLASS (gfc_reader_parent_class)->constructed) {
+		G_OBJECT_CLASS (gfc_reader_parent_class)->constructed (object);
+	}
+}
+
+static void
 reader_get_property (GObject   * object,
 		     guint       prop_id,
 		     GValue    * value,
@@ -85,6 +99,7 @@ gfc_reader_class_init (GfcReaderClass* self_class)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
 
+	object_class->constructed  = reader_constructed;
 	object_class->get_property = reader_get_property;
 	object_class->set_property = reader_set_property;
 
@@ -95,3 +110,10 @@ gfc_reader_class_init (GfcReaderClass* self_class)
 	g_type_class_add_private (self_class, sizeof (GfcReaderPrivate));
 }
 
+GIOChannel*
+gfc_reader_get_channel (GfcReader const* self)
+{
+	g_return_val_if_fail (GFC_IS_READER (self), NULL);
+
+	return self->_private->channel;
+}
