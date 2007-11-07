@@ -1,4 +1,4 @@
-/* This file is part of ...
+/* This file is part of libgfc
  *
  * AUTHORS
  *     Sven Herzberg  <set the EMAIL_ADDRESS environment variable>
@@ -22,4 +22,14 @@
  */
 
 #include "gfc-job.h"
+
+G_DEFINE_TYPE (GfcJob, gfc_job, G_TYPE_OBJECT);
+
+static void
+gfc_job_init (GfcJob* self)
+{}
+
+static void
+gfc_job_class_init (GfcJobClass* self_class)
+{}
 
