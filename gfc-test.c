@@ -1,4 +1,4 @@
-/* This file is part of ...
+/* This file is part of libgfc
  *
  * AUTHORS
  *     Sven Herzberg  <herzi@gnome-de.org>
@@ -22,4 +22,35 @@
  */
 
 #include "gfc-test.h"
+
+#include <stdio.h>
+
+static gboolean   initialized = FALSE;
+static GPrintFunc print_func = NULL;
+
+static void
+gfc_test_print (gchar const* string)
+{
+	if (print_func) {
+		gchar* message = g_strdup_printf ("%s: %s",
+						  g_get_prgname (),
+						  string);
+		print_func (message);
+		g_free (message);
+	} else {
+		printf ("%s: %s",
+			g_get_prgname (),
+			string);
+	}
+}
+
+void
+gfc_test_init (void)
+{
+	if (G_UNLIKELY (initialized)) {
+		return;
+	}
+
+	print_func = g_set_print_handler (gfc_test_print);
+}
 

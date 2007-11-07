@@ -1,4 +1,4 @@
-/* This file is part of ...
+/* This file is part of libgfc
  *
  * AUTHORS
  *     Sven Herzberg  <herzi@gnome-de.org>
@@ -24,5 +24,12 @@
 #ifndef GFC_TEST_H
 #define GFC_TEST_H
 
+#include <glib.h>
+
+G_BEGIN_DECLS
+
+void gfc_test_init (void);
+
+G_END_DECLS
 
 #endif /* !GFC_TEST_H */
