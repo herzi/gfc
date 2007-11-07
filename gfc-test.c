@@ -45,7 +45,8 @@ gfc_test_print (gchar const* string)
 }
 
 void
-gfc_test_init (void)
+gfc_test_init (gint*   argc,
+	       gchar***argv)
 {
 	if (G_UNLIKELY (initialized)) {
 		return;

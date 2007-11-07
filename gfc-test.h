@@ -28,7 +28,8 @@
 
 G_BEGIN_DECLS
 
-void gfc_test_init (void);
+void gfc_test_init (gint*   argc,
+		    gchar***argv);
 
 G_END_DECLS
 
