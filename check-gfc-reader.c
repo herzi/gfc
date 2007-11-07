@@ -24,6 +24,7 @@
  */
 
 #include <gfc-reader.h>
+#include <gfc-test.h>
 
 enum {
 	FD_READ,
@@ -93,6 +94,7 @@ main (int   argc,
 {
 	gboolean passed = TRUE;
 
+	gfc_test_init (&argc, &argv);
 	g_type_init ();
 
 	passed &= first_check ();
