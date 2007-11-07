@@ -33,4 +33,8 @@ check_gfc_reader_LDADD=\
 check_gfc_main_loop_SOURCES=\
 	$(gfc_src_dir)/check-gfc-main-loop.c \
 	$(NULL)
+check_gfc_main_loop_LDADD=\
+	libgfc-test.la \
+	$(LDADD) \
+	$(NULL)
 
