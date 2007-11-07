@@ -1,4 +1,5 @@
 .deps
+.libs
 COPYING
 INSTALL
 Makefile
@@ -11,5 +12,8 @@ config.status
 configure
 depcomp
 install-sh
+libtool
+*.la
+*.lo
 *.o
 missing
