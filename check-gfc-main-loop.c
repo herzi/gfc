@@ -23,10 +23,24 @@
  * if advised of the possibility of such damage.
  */
 
+#include <gfc-test.h>
+
+static gboolean
+check_gfc_main_quit (void)
+{
+	return TRUE;
+}
+
 int
 main (int   argc,
       char**argv)
 {
-	return 0;
+	gboolean passed = TRUE;
+
+	gfc_test_init (&argc, &argv);
+
+	passed &= check_gfc_main_quit ();
+
+	return passed ? 0 : 1;
 }
 
