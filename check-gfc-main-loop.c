@@ -26,9 +26,35 @@
 #include <gfc-test.h>
 
 static gboolean
+gfc_main_loop_quit (gpointer data)
+{
+	g_main_loop_quit (data);
+	return FALSE;
+}
+
+static gboolean
 check_gfc_main_quit (void)
 {
-	return TRUE;
+	/* Obbjective: this test makes sure that an idle handler with a low
+	 * priority doesn't get called before a handler with a higher priority
+	 * gets called */
+
+	/* prepare */
+	GMainLoop* loop = g_main_loop_new (NULL, FALSE);
+	gboolean   passed = TRUE;
+	gint       counter = 0;
+
+	g_idle_add (gfc_main_loop_quit, loop);
+
+	/* exercise */
+	g_main_loop_run (loop);
+
+	/* verify */
+
+	/* cleanup */
+	g_main_loop_unref (loop);
+
+	return passed;
 }
 
 int
