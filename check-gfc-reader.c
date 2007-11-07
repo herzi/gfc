@@ -25,9 +25,28 @@
 
 #include <gfc-reader.h>
 
+enum {
+	FD_READ,
+	FD_WRITE,
+	N_FDS
+};
+
+struct GfcTestPipe {
+	gint fds[N_FDS];
+};
+
 static gboolean
 first_check (void)
 {
+	struct GfcTestPipe test = {
+		{0,0}
+	};
+	pipe (test.fds);
+
+	;
+
+	close (test.fds[FD_READ]);
+	close (test.fds[FD_WRITE]);
 	return TRUE;
 }
 
