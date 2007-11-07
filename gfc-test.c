@@ -24,6 +24,7 @@
 #include "gfc-test.h"
 
 #include <stdio.h>
+#include <string.h>
 
 static gboolean   initialized = FALSE;
 static GPrintFunc print_func = NULL;
@@ -48,11 +49,17 @@ void
 gfc_test_init (gint*   argc,
 	       gchar***argv)
 {
+	gchar const* prgname;
+
 	if (G_UNLIKELY (initialized)) {
 		return;
 	}
 
-	g_set_prgname ((*argv)[0]);
+	prgname = (*argv)[0];
+	if (g_str_has_prefix (prgname, "./")) {
+		prgname += strlen ("./");
+	}
+	g_set_prgname (prgname);
 
 	print_func = g_set_print_handler (gfc_test_print);
 }
