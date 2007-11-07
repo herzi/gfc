@@ -52,6 +52,8 @@ gfc_test_init (gint*   argc,
 		return;
 	}
 
+	g_set_prgname ((*argv)[0]);
+
 	print_func = g_set_print_handler (gfc_test_print);
 }
 
