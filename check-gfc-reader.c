@@ -36,18 +36,36 @@ struct GfcTestPipe {
 };
 
 static gboolean
+close_on_idle (gpointer data)
+{
+	g_main_loop_quit (data);
+	return FALSE;
+}
+
+static gboolean
 first_check (void)
 {
+	/* prepare */
 	struct GfcTestPipe test = {
 		{0,0}
 	};
+	gboolean passed = TRUE;
+	GMainLoop* loop = g_main_loop_new (NULL, FALSE);
+
 	pipe (test.fds);
 
-	;
+	/* exercise */
+	g_idle_add (close_on_idle, loop);
+	g_main_loop_run (loop);
 
+	/* verify */
+
+	/* cleanup */
+	g_main_loop_quit (loop);
 	close (test.fds[FD_READ]);
 	close (test.fds[FD_WRITE]);
-	return TRUE;
+
+	return passed;
 }
 
 int
