@@ -23,10 +23,24 @@
  * if advised of the possibility of such damage.
  */
 
+#include <gfc-reader.h>
+
+static gboolean
+first_check (void)
+{
+	return TRUE;
+}
+
 int
 main (int   argc,
       char**argv)
 {
-	return 0;
+	gboolean passed = TRUE;
+
+	g_type_init ();
+
+	passed &= first_check ();
+	
+	return passed ? 0 : 1;
 }
 

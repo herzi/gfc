@@ -1,3 +1,6 @@
+*.la
+*.lo
+*.o
 .deps
 .libs
 COPYING
@@ -7,13 +10,11 @@ Makefile.in
 aclocal.m4
 autom4te.cache
 autotool
+check-gfc-reader
 config.log
 config.status
 configure
 depcomp
 install-sh
 libtool
-*.la
-*.lo
-*.o
 missing
