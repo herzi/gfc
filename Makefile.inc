@@ -3,6 +3,7 @@ noinst_LTLIBRARIES=\
 	libgfc-test.la \
 	$(NULL)
 gfc_tests=\
+	check-gfc-main-loop \
 	check-gfc-reader \
 	$(NULL)
 
@@ -27,5 +28,9 @@ check_gfc_reader_SOURCES=\
 check_gfc_reader_LDADD=\
 	libgfc-test.la \
 	$(LDADD) \
+	$(NULL)
+
+check_gfc_main_loop_SOURCES=\
+	$(gfc_src_dir)/check-gfc-main-loop.c \
 	$(NULL)
 

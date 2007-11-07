@@ -10,6 +10,7 @@ Makefile.in
 aclocal.m4
 autom4te.cache
 autotool
+check-gfc-main-loop
 check-gfc-reader
 config.log
 config.status
