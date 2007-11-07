@@ -41,6 +41,25 @@ gfc_main_loop_quit (gpointer data)
 	return FALSE;
 }
 
+static void
+gfc_test_add_quit_handler (GMainLoop* loop)
+{
+	g_idle_add_full (G_MAXINT,
+			 gfc_main_loop_quit,
+			 loop,
+			 NULL);
+}
+
+static gboolean
+count (gpointer data)
+{
+	gint* counter = data;
+
+	(*counter)++;
+
+	return *counter < 10;
+}
+
 static gboolean
 check_gfc_main_quit (void)
 {
@@ -52,12 +71,23 @@ check_gfc_main_quit (void)
 	gboolean   passed = TRUE;
 	gint       counter = 0;
 
-	g_idle_add (gfc_main_loop_quit, loop);
+	gfc_test_add_quit_handler (loop);
+	g_idle_add_full (G_PRIORITY_LOW,
+			 count,
+			 &counter,
+			 NULL);
 
 	/* exercise */
 	g_main_loop_run (loop);
 
 	/* verify */
+	if (counter != 10) {
+		g_warning ("%s: counter has an unexpected value: %d (expected %d)",
+			   G_STRLOC,
+			   counter,
+			   10);
+		passed = FALSE;
+	}
 
 	/* cleanup */
 	g_main_loop_unref (loop);
