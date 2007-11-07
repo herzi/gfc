@@ -2,8 +2,12 @@ noinst_LTLIBRARIES=\
 	libgfc.la \
 	libgfc-test.la \
 	$(NULL)
-check_PROGRAMS+=check-gfc-reader
-TESTS+=check-gfc-reader
+gfc_tests=\
+	check-gfc-reader \
+	$(NULL)
+
+check_PROGRAMS+=$(gfc_tests)
+TESTS+=$(gfc_tests)
 
 libgfc_la_SOURCES=\
 	$(gfc_src_dir)/gfc-job.c \
