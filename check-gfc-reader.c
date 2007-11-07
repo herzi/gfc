@@ -36,6 +36,16 @@ struct GfcTestPipe {
 };
 
 static gboolean
+count (gpointer data)
+{
+	gint* counter = data;
+
+	(*counter)++;
+
+	return *counter < 10;
+}
+
+static gboolean
 close_on_idle (gpointer data)
 {
 	g_main_loop_quit (data);
@@ -49,16 +59,25 @@ first_check (void)
 	struct GfcTestPipe test = {
 		{0,0}
 	};
+	gint counter = 0;
 	gboolean passed = TRUE;
 	GMainLoop* loop = g_main_loop_new (NULL, FALSE);
 
 	pipe (test.fds);
 
 	/* exercise */
-	g_idle_add (close_on_idle, loop);
+	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
+			 count,
+			 &counter,
+			 NULL);
+	g_idle_add_full (G_MAXINT,
+			 close_on_idle,
+			 loop,
+			 NULL);
 	g_main_loop_run (loop);
 
 	/* verify */
+	g_print ("counter: %d\n", counter);
 
 	/* cleanup */
 	g_main_loop_quit (loop);
