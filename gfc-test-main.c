@@ -1,4 +1,4 @@
-/* This file is part of ...
+/* This file is part of libgfc
  *
  * AUTHORS
  *     Sven Herzberg
@@ -22,4 +22,20 @@
  */
 
 #include "gfc-test-main.h"
+
+static gboolean
+gfc_main_loop_quit (gpointer data)
+{
+	g_main_loop_quit (data);
+	return FALSE;
+}
+
+void
+gfc_test_add_quit_handler (GMainLoop* loop)
+{
+	g_idle_add_full (G_MAXINT,
+			 gfc_main_loop_quit,
+			 loop,
+			 NULL);
+}
 

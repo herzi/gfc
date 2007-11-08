@@ -36,22 +36,6 @@ check_glib_main_priorities (void)
 }
 	
 static gboolean
-gfc_main_loop_quit (gpointer data)
-{
-	g_main_loop_quit (data);
-	return FALSE;
-}
-
-void
-gfc_test_add_quit_handler (GMainLoop* loop)
-{
-	g_idle_add_full (G_MAXINT,
-			 gfc_main_loop_quit,
-			 loop,
-			 NULL);
-}
-
-static gboolean
 count (gpointer data)
 {
 	gint* counter = data;
