@@ -23,6 +23,8 @@
  * if advised of the possibility of such damage.
  */
 
+#include <string.h>
+
 #include <gfc-reader.h>
 #include <gfc-test.h>
 #include <gfc-test-main.h>
@@ -37,10 +39,24 @@ struct GfcTestPipe {
 	gint fds[N_FDS];
 };
 
+static struct GfcTestPipe test = {
+	{0,0}
+};
+
+static inline ssize_t
+gfc_strwrite (gint         fd,
+	      gchar const* string)
+{
+	write (fd, string, strlen (string) + 1);
+}
+
 static gboolean
 write_message (gpointer data)
 {
 	static gint i = 0;
+
+	gfc_strwrite (test.fds[FD_WRITE], "Message\n");
+	g_string_append_c (data, 'w');
 
 	return ++i < 10;
 }
@@ -49,26 +65,25 @@ static gboolean
 first_check (void)
 {
 	/* prepare */
-	struct GfcTestPipe test = {
-		{0,0}
-	};
-	gboolean passed = TRUE;
-	GMainLoop* loop = g_main_loop_new (NULL, FALSE);
+	GMainLoop* loop   = g_main_loop_new (NULL, FALSE);
+	gboolean   passed = TRUE;
+	GString  * string = g_string_new ("");
 
 	pipe (test.fds);
 
 	/* exercise */
 	g_idle_add_full (G_PRIORITY_LOW,
 			 write_message,
-			 &test.fds[FD_WRITE],
+			 string,
 			 NULL);
 	gfc_test_add_quit_handler (loop);
 	g_main_loop_run (loop);
 
 	/* verify */
-	;
+	g_print ("%s\n", string->str);
 
 	/* cleanup */
+	g_string_free (string, TRUE);
 	g_main_loop_quit (loop);
 	close (test.fds[FD_READ]);
 	close (test.fds[FD_WRITE]);
