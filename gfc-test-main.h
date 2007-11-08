@@ -1,4 +1,4 @@
-/* This file is part of ...
+/* This file is part of libgfc
  *
  * AUTHORS
  *     Sven Herzberg
@@ -24,5 +24,12 @@
 #ifndef GFC_TEST_MAIN_H
 #define GFC_TEST_MAIN_H
 
+#include <glib.h>
+
+G_BEGIN_DECLS
+
+void gfc_test_add_quit_handler (GMainLoop* loop);
+
+G_END_DECLS
 
 #endif /* !GFC_TEST_MAIN_H */

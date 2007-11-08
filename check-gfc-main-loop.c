@@ -24,6 +24,7 @@
  */
 
 #include <gfc-test.h>
+#include <gfc-test-main.h>
 
 static gboolean
 check_glib_main_priorities (void)
@@ -41,7 +42,7 @@ gfc_main_loop_quit (gpointer data)
 	return FALSE;
 }
 
-static void
+void
 gfc_test_add_quit_handler (GMainLoop* loop)
 {
 	g_idle_add_full (G_MAXINT,
