@@ -69,6 +69,25 @@ read_line_cb (GfcReader  * reader,
 	g_string_append_c (data, 'r');
 }
 
+static gsize
+count_chars (gchar const* str,
+	     gchar        chr)
+{
+	gsize result = 0;
+
+	if (!str) {
+		return 0;
+	}
+
+	for (; *str; str++) {
+		if (*str == chr) {
+			result++;
+		}
+	}
+
+	return result;
+}
+
 static gboolean
 first_check (void)
 {
@@ -93,7 +112,12 @@ first_check (void)
 	g_main_loop_run (loop);
 
 	/* verify */
-	g_print ("%s\n", string->str);
+	if (10 != count_chars (string->str, 'w')) {
+		g_warning ("%d writes occurred (expected %d)",
+			   count_chars (string->str, 'w'),
+			   10);
+		passed = FALSE;
+	}
 
 	/* cleanup */
 	g_string_free (string, TRUE);
