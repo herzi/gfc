@@ -43,7 +43,7 @@ static struct GfcTestPipe test = {
 	{0,0}
 };
 
-static inline ssize_t
+static inline size_t
 gfc_strwrite (gint         fd,
 	      gchar const* string)
 {
