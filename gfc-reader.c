@@ -67,12 +67,15 @@ io_watch_cb (GIOChannel  * channel,
 		state = g_io_channel_read_line_string (channel, buffer, &delim, NULL);
 		switch (state) {
 		case G_IO_STATUS_NORMAL:
-			g_string_set_size (buffer, delim);
-			g_signal_emit (self,
-				       signals[READ_LINE],
-				       0,
-				       buffer->str); // FIXME: emit by signal id
-			g_string_set_size (buffer, 0);
+			/* sometimes we get an empty string because we stopped reading at the last character */
+			if (delim < buffer->len && buffer->str[delim]) {
+				g_string_set_size (buffer, delim);
+				g_signal_emit (self,
+					       signals[READ_LINE],
+					       0,
+					       buffer->str); // FIXME: emit by signal id
+				g_string_set_size (buffer, 0);
+			}
 			break;
 		case G_IO_STATUS_AGAIN:
 			/* no data right now... try again later */
