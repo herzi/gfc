@@ -25,6 +25,7 @@
 
 #include <gfc-reader.h>
 #include <gfc-test.h>
+#include <gfc-test-main.h>
 
 enum {
 	FD_READ,
@@ -37,20 +38,11 @@ struct GfcTestPipe {
 };
 
 static gboolean
-count (gpointer data)
+write_message (gpointer data)
 {
-	gint* counter = data;
+	static gint i = 0;
 
-	(*counter)++;
-
-	return *counter < 10;
-}
-
-static gboolean
-close_on_idle (gpointer data)
-{
-	g_main_loop_quit (data);
-	return FALSE;
+	return ++i < 10;
 }
 
 static gboolean
@@ -60,25 +52,21 @@ first_check (void)
 	struct GfcTestPipe test = {
 		{0,0}
 	};
-	gint counter = 0;
 	gboolean passed = TRUE;
 	GMainLoop* loop = g_main_loop_new (NULL, FALSE);
 
 	pipe (test.fds);
 
 	/* exercise */
-	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
-			 count,
-			 &counter,
+	g_idle_add_full (G_PRIORITY_LOW,
+			 write_message,
+			 &test.fds[FD_WRITE],
 			 NULL);
-	g_idle_add_full (G_MAXINT,
-			 close_on_idle,
-			 loop,
-			 NULL);
+	gfc_test_add_quit_handler (loop);
 	g_main_loop_run (loop);
 
 	/* verify */
-	g_print ("counter: %d\n", counter);
+	;
 
 	/* cleanup */
 	g_main_loop_quit (loop);
