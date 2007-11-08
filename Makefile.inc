@@ -43,7 +43,3 @@ check_gfc_main_loop_LDADD=\
 	$(LDADD) \
 	$(NULL)
 
-if WITH_VALGRIND
-TESTS_ENVIRONMENT=G_SLICE=always-malloc G_DEBUG=gc-friendly $(top_builddir)/libtool --mode=execute valgrind --leak-check=full -q --suppressions=$(srcdir)/glib-2.0.supp
-endif
-

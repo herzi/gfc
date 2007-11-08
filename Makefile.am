@@ -12,5 +12,9 @@ TESTS=
 AM_CPPFLAGS=$(GFC_CFLAGS)
 LDADD=$(GFC_LIBS)
 
+if WITH_VALGRIND
+TESTS_ENVIRONMENT=G_SLICE=always-malloc G_DEBUG=gc-friendly $(top_builddir)/libtool --mode=execute valgrind --leak-check=full -q --suppressions=$(srcdir)/glib-2.0.supp
+endif
+
 gfc_src_dir=.
 include Makefile.inc
