@@ -20,6 +20,8 @@ libgfc_la_SOURCES=\
 libgfc_test_la_SOURCES=\
 	$(gfc_src_dir)/gfc-test.c \
 	$(gfc_src_dir)/gfc-test.h \
+	$(gfc_src_dir)/gfc-test-main.c \
+	$(gfc_src_dir)/gfc-test-main.h \
 	$(NULL)
 
 check_gfc_reader_SOURCES=\
