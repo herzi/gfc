@@ -117,6 +117,11 @@ first_check (void)
 			   count_chars (string->str, 'w'),
 			   10);
 		passed = FALSE;
+	} else if (10 != count_chars (string->str, 'r')) {
+		g_warning ("%d reads occurred (expected %d)",
+			   count_chars (string->str, 'r'),
+			   10);
+		passed = FALSE;
 	}
 
 	/* cleanup */
