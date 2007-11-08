@@ -1,0 +1,10 @@
+{
+   g_type_init()
+   Memcheck:Leak
+   fun:calloc
+   fun:g_malloc0
+   fun:type_node_any_new_W
+   fun:type_node_fundamental_new_W
+   fun:g_type_init_with_debug_flags
+   fun:g_type_init
+}
