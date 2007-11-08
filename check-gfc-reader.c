@@ -122,6 +122,9 @@ first_check (void)
 			   count_chars (string->str, 'r'),
 			   10);
 		passed = FALSE;
+	} else {
+		g_print ("\"%s\" ('w' = write; 'r' = read)\n",
+			 string->str);
 	}
 
 	/* cleanup */
