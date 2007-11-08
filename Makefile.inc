@@ -1,6 +1,5 @@
 noinst_LTLIBRARIES=\
 	libgfc.la \
-	libgfc-test.la \
 	$(NULL)
 gfc_tests=\
 	check-gfc-main-loop \
@@ -8,6 +7,7 @@ gfc_tests=\
 	$(NULL)
 
 check_PROGRAMS+=$(gfc_tests)
+check_LTLIBRARIES+=libgfc-test.la
 TESTS+=$(gfc_tests)
 
 libgfc_la_SOURCES=\

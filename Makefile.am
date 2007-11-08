@@ -6,6 +6,7 @@
 # the code and then just include Makefile.inc
 
 check_PROGRAMS=
+check_LTLIBRARIES=
 TESTS=
 
 AM_CPPFLAGS=$(GFC_CFLAGS)
