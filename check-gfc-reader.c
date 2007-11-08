@@ -61,17 +61,30 @@ write_message (gpointer data)
 	return ++i < 10;
 }
 
+static void
+read_line_cb (GfcReader  * reader,
+	      gchar const* line,
+	      gpointer     data)
+{
+	g_string_append_c (data, 'r');
+}
+
 static gboolean
 first_check (void)
 {
 	/* prepare */
+	GfcReader* reader;
 	GMainLoop* loop   = g_main_loop_new (NULL, FALSE);
 	gboolean   passed = TRUE;
 	GString  * string = g_string_new ("");
 
 	pipe (test.fds);
 
+	reader = gfc_reader_new (test.fds[FD_READ]);
+
 	/* exercise */
+	g_signal_connect (reader, "read-line",
+			  G_CALLBACK (read_line_cb), string);
 	g_idle_add_full (G_PRIORITY_LOW,
 			 write_message,
 			 string,
@@ -87,6 +100,7 @@ first_check (void)
 	g_main_loop_quit (loop);
 	close (test.fds[FD_READ]);
 	close (test.fds[FD_WRITE]);
+	g_object_unref (reader);
 
 	return passed;
 }

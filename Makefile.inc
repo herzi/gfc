@@ -28,6 +28,7 @@ check_gfc_reader_SOURCES=\
 	$(gfc_src_dir)/check-gfc-reader.c \
 	$(NULL)
 check_gfc_reader_LDADD=\
+	libgfc.la \
 	libgfc-test.la \
 	$(LDADD) \
 	$(NULL)
