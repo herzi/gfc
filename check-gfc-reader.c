@@ -24,6 +24,9 @@
  */
 
 #include <string.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <unistd.h>
 
 #include <gfc-reader.h>
 #include <gfc-test.h>
