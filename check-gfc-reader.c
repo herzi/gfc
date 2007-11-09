@@ -50,7 +50,7 @@ static inline size_t
 gfc_strwrite (gint         fd,
 	      gchar const* string)
 {
-	write (fd, string, strlen (string) + 1);
+	return write (fd, string, strlen (string) + 1);
 }
 
 static gboolean
@@ -116,12 +116,12 @@ first_check (void)
 
 	/* verify */
 	if (10 != count_chars (string->str, 'w')) {
-		g_warning ("%d writes occurred (expected %d)",
+		g_warning ("%ld writes occurred (expected %d)",
 			   count_chars (string->str, 'w'),
 			   10);
 		passed = FALSE;
 	} else if (10 != count_chars (string->str, 'r')) {
-		g_warning ("%d reads occurred (expected %d)",
+		g_warning ("%ld reads occurred (expected %d)",
 			   count_chars (string->str, 'r'),
 			   10);
 		passed = FALSE;
