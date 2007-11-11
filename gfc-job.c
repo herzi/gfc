@@ -49,6 +49,9 @@ job_constructed (GObject* object)
 {
 	GfcJob* self = GFC_JOB (object);
 
+	// FIXME: spawn process and connect to the watch
+	// FIXME: after executing the process make sure the state gets set to done
+
 	self->_private->state = GFC_JOB_EXECUTE;
 
 	if (G_OBJECT_CLASS (gfc_job_parent_class)->constructed) {
