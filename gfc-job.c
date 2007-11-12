@@ -23,13 +23,46 @@
 
 #include "gfc-job.h"
 
+typedef enum {
+	GFC_JOB_SETUP,
+	GFC_JOB_EXECUTE,
+	GFC_JOB_DONE
+} GfcJobState;
+
+struct _GfcJobPrivate {
+	GfcJobState  state;
+};
+
 G_DEFINE_TYPE (GfcJob, gfc_job, G_TYPE_OBJECT);
 
 static void
 gfc_job_init (GfcJob* self)
-{}
+{
+	self->_private = G_TYPE_INSTANCE_GET_PRIVATE (self,
+						      GFC_TYPE_JOB,
+						      GfcJobPrivate);
+	self->_private->state = GFC_JOB_SETUP;
+}
+
+static void
+job_constructed (GObject* object)
+{
+	GfcJob* self = GFC_JOB (object);
+
+	self->_private->state = GFC_JOB_EXECUTE;
+
+	if (G_OBJECT_CLASS (gfc_job_parent_class)->constructed) {
+		G_OBJECT_CLASS (gfc_job_parent_class)->constructed (object);
+	}
+}
 
 static void
 gfc_job_class_init (GfcJobClass* self_class)
-{}
+{
+	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
+
+	object_class->constructed = job_constructed;
+
+	g_type_class_add_private (self_class, sizeof (GfcJobPrivate));
+}
 
