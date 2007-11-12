@@ -134,7 +134,19 @@ gfc_job_class_init (GfcJobClass* self_class)
 gchar**
 gfc_job_get_argv (GfcJob const* self)
 {
+	// FIXME: fix the return value to be correctly const'ed
 	g_return_val_if_fail (GFC_IS_JOB (self), NULL);
 
 	return self->_private->argv;
 }
+
+gchar const*
+gfc_job_get_command (GfcJob const* self)
+{
+	g_return_val_if_fail (GFC_IS_JOB (self), NULL);
+
+	return self->_private->argv ?
+	       self->_private->argv[0] :
+	       NULL;
+}
+

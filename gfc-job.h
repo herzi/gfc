@@ -39,8 +39,9 @@ typedef struct _GfcJobClass   GfcJobClass;
 #define GFC_IS_JOB_CLASS(i)  (G_TYPE_CHECK_CLASS_TYPE ((c), GFC_TYPE_JOB))
 #define GFC_JOB_GET_CLASS(c) (G_TYPE_INSTANCE_GET_CLASS ((i), GFC_TYPE_JOB, GfcJobClass))
 
-GType   gfc_job_get_type (void);
-gchar** gfc_job_get_argv (GfcJob const* self);
+GType   gfc_job_get_type         (void);
+gchar** gfc_job_get_argv         (GfcJob const* self);
+gchar const* gfc_job_get_command (GfcJob const* self);
 
 struct _GfcJob {
 	GObject        base_instance;
