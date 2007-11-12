@@ -104,6 +104,9 @@ job_set_property (GObject     * object,
 	switch (prop_id) {
 	case PROP_ARGV:
 		g_return_if_fail (self->_private->state == GFC_JOB_SETUP);
+		if (!g_value_get_boxed (value)) {
+			break;
+		}
 		g_return_if_fail (!self->_private->argv);
 		self->_private->argv = g_value_dup_boxed (value);
 		g_object_notify (object, "argv");
@@ -120,7 +123,7 @@ gfc_job_class_init (GfcJobClass* self_class)
 	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
 
 	object_class->constructed  = job_constructed;
-	object_class->finalize     = job_constructed;
+	object_class->finalize     = job_finalize;
 	object_class->get_property = job_get_property;
 	object_class->set_property = job_set_property;
 
