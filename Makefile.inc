@@ -6,6 +6,7 @@ gfc_tests=\
 	check-gfc-reader \
 	$(NULL)
 
+noinst_PROGRAMS+=demo-gfc-window
 check_PROGRAMS+=$(gfc_tests)
 check_LTLIBRARIES+=libgfc-test.la
 TESTS+=$(gfc_tests)
@@ -43,3 +44,6 @@ check_gfc_main_loop_LDADD=\
 	$(LDADD) \
 	$(NULL)
 
+demo_gfc_window_SOURCES=\
+	$(gfc_src_dir)/demo-gfc-window.c \
+	$(NULL)

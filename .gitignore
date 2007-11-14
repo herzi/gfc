@@ -15,6 +15,7 @@ check-gfc-reader
 config.log
 config.status
 configure
+demo-gfc-window
 depcomp
 install-sh
 libtool

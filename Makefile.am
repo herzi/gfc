@@ -7,6 +7,7 @@
 
 check_PROGRAMS=
 check_LTLIBRARIES=
+noinst_PROGRAMS=
 TESTS=
 
 AM_CPPFLAGS=$(GFC_CFLAGS)
