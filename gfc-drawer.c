@@ -23,16 +23,79 @@
 
 #include "gfc-drawer.h"
 
+struct _GfcDrawerPrivate {
+	GfcWindow* window;
+};
+
+enum {
+	PROP_0,
+	PROP_WINDOW
+};
+
 G_DEFINE_TYPE (GfcDrawer, gfc_drawer, GTK_TYPE_BIN);
 
 static void
 gfc_drawer_init (GfcDrawer* self)
 {
+	self->_private = G_TYPE_INSTANCE_GET_PRIVATE (self,
+						      GFC_TYPE_DRAWER,
+						      GfcDrawerPrivate);
+
 	GTK_WIDGET_UNSET_FLAGS (self, GTK_NO_WINDOW);
 	GTK_WIDGET_SET_FLAGS (self, GTK_TOPLEVEL);
 
 	/* GTK_PRIVATE_SET_FLAG (window, GTK_ANCHORED); */
 	GTK_WIDGET(self)->private_flags |= (1 <<  9);
+}
+
+static void
+drawer_dispose (GObject* object)
+{
+	GfcDrawer* self = GFC_DRAWER (object);
+
+	if (self->_private->window) {
+		g_object_unref (self->_private->window);
+		self->_private->window = NULL;
+	}
+
+	G_OBJECT_CLASS (gfc_drawer_parent_class)->dispose (object);
+}
+
+static void
+drawer_get_property (GObject   * object,
+		     guint       prop_id,
+		     GValue    * value,
+		     GParamSpec* pspec)
+{
+	GfcDrawer* self = GFC_DRAWER (object);
+
+	switch (prop_id) {
+	case PROP_WINDOW:
+		g_value_set_object (value, self->_private->window);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+drawer_set_property (GObject     * object,
+		     guint         prop_id,
+		     GValue const* value,
+		     GParamSpec  * pspec)
+{
+	GfcDrawer* self = GFC_DRAWER (object);
+
+	switch (prop_id) {
+	case PROP_WINDOW:
+		self->_private->window = g_value_dup_object (value);
+		g_object_notify (object, "window");
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -50,16 +113,28 @@ drawer_unrealize (GtkWidget* widget)
 static void
 gfc_drawer_class_init (GfcDrawerClass* self_class)
 {
+	GObjectClass  * object_class = G_OBJECT_CLASS (self_class);
 	GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
+
+	object_class->dispose      = drawer_dispose;
+	object_class->get_property = drawer_get_property;
+	object_class->set_property = drawer_set_property;
+
+	g_object_class_install_property (object_class, PROP_WINDOW,
+					 g_param_spec_object ("window", "window", "window",
+							      GFC_TYPE_WINDOW, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	widget_class->realize   = drawer_realize;
 	widget_class->unrealize = drawer_unrealize;
+
+	g_type_class_add_private (self_class, sizeof (GfcDrawerPrivate));
 }
 
 GtkWidget*
 gfc_drawer_new (GfcWindow* parent)
 {
 	return g_object_new (GFC_TYPE_DRAWER,
+			     "window", parent,
 			     NULL);
 }
 
