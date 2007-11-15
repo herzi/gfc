@@ -33,7 +33,7 @@ typedef struct _GfcWindowPrivate GfcWindowPrivate;
 typedef struct _GfcWindowClass   GfcWindowClass;
 
 #define GFC_TYPE_WINDOW         (gfc_window_get_type ())
-#define GFC_WINDOW(i)           (G_TYPE_CHECK_INSTANE_CAST ((i), GFC_TYPE_WINDOW, GfcWindow))
+#define GFC_WINDOW(i)           (G_TYPE_CHECK_INSTANCE_CAST ((i), GFC_TYPE_WINDOW, GfcWindow))
 #define GFC_WINDOW_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), GFC_TYPE_WINDOW, GfcWindowClass))
 #define GFC_IS_WINDOW(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), GFC_TYPE_WINDOW))
 #define GFC_IS_WINDOW_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), GFC_TYPE_WINDOW))
