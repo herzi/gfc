@@ -21,22 +21,11 @@
  * USA
  */
 
-#include <gtk/gtk.h>
-#include <gfc.h>
+#include "gfc-window.h"
 
-int
-main (int   argc,
-      char**argv)
+GtkWidget*
+gfc_window_new (void)
 {
-	GtkWidget* window;
-
-	gtk_init (&argc, &argv);
-
-	window = gfc_window_new ();
-	g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
-	gtk_widget_show (window);
-	gtk_main ();
-
-	return 0;
+	return gtk_window_new (GTK_WINDOW_TOPLEVEL);
 }
 

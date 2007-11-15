@@ -12,10 +12,13 @@ check_LTLIBRARIES+=libgfc-test.la
 TESTS+=$(gfc_tests)
 
 libgfc_la_SOURCES=\
+	$(gfc_src_dir)/gfc.h \
 	$(gfc_src_dir)/gfc-job.c \
 	$(gfc_src_dir)/gfc-job.h \
 	$(gfc_src_dir)/gfc-reader.c \
 	$(gfc_src_dir)/gfc-reader.h \
+	$(gfc_src_dir)/gfc-window.c \
+	$(gfc_src_dir)/gfc-window.h \
 	$(NULL)
 
 libgfc_test_la_SOURCES=\
@@ -46,4 +49,8 @@ check_gfc_main_loop_LDADD=\
 
 demo_gfc_window_SOURCES=\
 	$(gfc_src_dir)/demo-gfc-window.c \
+	$(NULL)
+demo_gfc_window_LDADD=\
+	libgfc.la \
+	$(LDADD) \
 	$(NULL)
