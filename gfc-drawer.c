@@ -101,6 +101,11 @@ drawer_set_property (GObject     * object,
 static void
 drawer_realize (GtkWidget* widget)
 {
+	GfcDrawer* self = GFC_DRAWER (widget);
+
+	g_return_if_fail (GFC_IS_WINDOW (self->_private->window));
+	g_return_if_fail (GTK_WIDGET_REALIZED (self->_private->window));
+
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 }
 
