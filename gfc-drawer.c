@@ -142,6 +142,8 @@ drawer_realize (GtkWidget* widget)
 	widget->window = gdk_window_new (gtk_widget_get_root_window (widget),
 					 &attributes, attributes_mask);
 
+	[self->_private->drawer setContentView:gdk_quartz_window_get_nsview (widget->window)];
+
 	[pool release];
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
