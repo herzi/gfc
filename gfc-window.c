@@ -107,3 +107,12 @@ gfc_window_new (void)
 	return g_object_new (GFC_TYPE_WINDOW, NULL);
 }
 
+void
+gfc_window_toggle_sidebar (GfcWindow* self)
+{
+	g_return_if_fail (GFC_IS_WINDOW (self));
+	g_return_if_fail (GTK_WIDGET_REALIZED (self));
+
+	gfc_drawer_toggle (self->_private->drawer);
+}
+

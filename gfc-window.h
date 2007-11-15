@@ -39,8 +39,9 @@ typedef struct _GfcWindowClass   GfcWindowClass;
 #define GFC_IS_WINDOW_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), GFC_TYPE_WINDOW))
 #define GFC_WINDOW_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), GFC_ZTYPE_WINDOW, GfcWindowClass))
 
-GType      gfc_window_get_type (void);
-GtkWidget* gfc_window_new      (void);
+GType      gfc_window_get_type       (void);
+GtkWidget* gfc_window_new            (void);
+void       gfc_window_toggle_sidebar (GfcWindow* self);
 
 struct _GfcWindow {
 	GtkWindow         base_instance;
