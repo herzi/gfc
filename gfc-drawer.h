@@ -28,6 +28,10 @@
 
 G_BEGIN_DECLS
 
+typedef struct _GfcDrawer        GfcDrawer;
+
+#define GFC_DRAWER(i) ((GfcDrawer*)(i))
+
 GtkWidget* gfc_dock_new (GfcWindow* parent);
 
 G_END_DECLS

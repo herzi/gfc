@@ -24,7 +24,8 @@
 #include "gfc-drawer.h"
 
 GtkWidget*
-gfc_dock_new (GfcWindow* parent)
+gfc_drawer_new (GfcWindow* parent)
 {
 	return NULL;
 }
+
