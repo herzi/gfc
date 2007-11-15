@@ -11,6 +11,11 @@ check_PROGRAMS+=$(gfc_tests)
 check_LTLIBRARIES+=libgfc-test.la
 TESTS+=$(gfc_tests)
 
+dist_libgfc_la_mac_src=\
+	$(gfc_src_dir)/gfc-drawer.c \
+	$(gfc_src_dir)/gfc-drawer.h \
+	$(NULL)
+
 libgfc_la_SOURCES=\
 	$(gfc_src_dir)/gfc.h \
 	$(gfc_src_dir)/gfc-job.c \
@@ -20,6 +25,7 @@ libgfc_la_SOURCES=\
 	$(gfc_src_dir)/gfc-window.c \
 	$(gfc_src_dir)/gfc-window.h \
 	$(NULL)
+libgfc_la_SOURCES+=$(dist_libgfc_la_mac_src)
 
 libgfc_test_la_SOURCES=\
 	$(gfc_src_dir)/gfc-test.c \
