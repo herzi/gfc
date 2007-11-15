@@ -163,3 +163,21 @@ gfc_drawer_new (GfcWindow* parent)
 			     NULL);
 }
 
+void
+gfc_drawer_open (GfcDrawer* self)
+{
+	g_return_if_fail (GFC_IS_DRAWER (self));
+	g_return_if_fail (GTK_WIDGET_REALIZED (self));
+
+	[self->_private->drawer open];
+}
+
+void
+gfc_drawer_close (GfcDrawer* self)
+{
+	g_return_if_fail (GFC_IS_DRAWER (self));
+	g_return_if_fail (GTK_WIDGET_REALIZED (self));
+
+	[self->_private->drawer close];
+}
+
