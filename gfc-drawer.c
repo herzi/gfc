@@ -112,6 +112,27 @@ drawer_realize (GtkWidget* widget)
 	g_return_if_fail (GTK_WIDGET_REALIZED (self->_private->window));
 	g_return_if_fail (!self->_private->drawer);
 
+	if (widget->allocation.x      == -1 &&
+	    widget->allocation.y      == -1 &&
+	    widget->allocation.width  ==  1 &&
+	    widget->allocation.height ==  1)
+	{
+		GtkRequisition requisition = {0,0};
+		GtkAllocation  allocation  = {0,0, 200, 200};
+
+		gtk_widget_size_request (widget, &requisition);
+		if (requisition.width || requisition.height) {
+			/* non-empty window */
+			allocation.width  = requisition.width;
+			allocation.height = requisition.height;
+		}
+		gtk_widget_size_allocate (widget, &allocation);
+
+		// _gtk_container_queue_resize (GTK_CONTAINER (widget));
+
+		g_return_if_fail (!GTK_WIDGET_REALIZED (widget));
+	}
+
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
 	view_window = gdk_quartz_window_get_nsview (GTK_WIDGET (self->_private->window)->window);
@@ -124,8 +145,8 @@ drawer_realize (GtkWidget* widget)
 	attributes.wclass = GDK_INPUT_OUTPUT;
 	attributes.visual = gtk_widget_get_visual (widget);
 	attributes.colormap = gtk_widget_get_colormap (widget);
-	attributes.width = 100; // FIXME
-	attributes.height = 100; // FIXME
+	attributes.width = widget->allocation.width;
+	attributes.height = widget->allocation.height;
 	attributes.event_mask = gtk_widget_get_events (widget);
 	attributes.event_mask |= (GDK_EXPOSURE_MASK |
 				  GDK_KEY_PRESS_MASK |
