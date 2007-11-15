@@ -68,11 +68,35 @@ window_destroy (GtkObject* object)
 }
 
 static void
+window_realize (GtkWidget* widget)
+{
+	GfcWindow* self = GFC_WINDOW (widget);
+
+	GTK_WIDGET_CLASS (gfc_window_parent_class)->realize (widget);
+
+	gtk_widget_realize (GTK_WIDGET (self->_private->drawer));
+}
+
+static void
+window_unrealize (GtkWidget* widget)
+{
+	GfcWindow* self = GFC_WINDOW (widget);
+
+	gtk_widget_unrealize (GTK_WIDGET (self->_private->drawer));
+
+	GTK_WIDGET_CLASS (gfc_window_parent_class)->unrealize (widget);
+}
+
+static void
 gfc_window_class_init (GfcWindowClass* self_class)
 {
 	GtkObjectClass* gtk_object_class = GTK_OBJECT_CLASS (self_class);
+	GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
 
 	gtk_object_class->destroy = window_destroy;
+
+	widget_class->realize     = window_realize;
+	widget_class->unrealize   = window_unrealize;
 
 	g_type_class_add_private (self_class, sizeof (GfcWindowPrivate));
 }

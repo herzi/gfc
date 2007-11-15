@@ -27,11 +27,34 @@ G_DEFINE_TYPE (GfcDrawer, gfc_drawer, GTK_TYPE_BIN);
 
 static void
 gfc_drawer_init (GfcDrawer* self)
-{}
+{
+	GTK_WIDGET_UNSET_FLAGS (self, GTK_NO_WINDOW);
+	GTK_WIDGET_SET_FLAGS (self, GTK_TOPLEVEL);
+
+	/* GTK_PRIVATE_SET_FLAG (window, GTK_ANCHORED); */
+	GTK_WIDGET(self)->private_flags |= (1 <<  9);
+}
+
+static void
+drawer_realize (GtkWidget* widget)
+{
+	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+}
+
+static void
+drawer_unrealize (GtkWidget* widget)
+{
+	GTK_WIDGET_UNSET_FLAGS (widget, GTK_REALIZED);
+}
 
 static void
 gfc_drawer_class_init (GfcDrawerClass* self_class)
-{}
+{
+	GtkWidgetClass* widget_class = GTK_WIDGET_CLASS (self_class);
+
+	widget_class->realize   = drawer_realize;
+	widget_class->unrealize = drawer_unrealize;
+}
 
 GtkWidget*
 gfc_drawer_new (GfcWindow* parent)
