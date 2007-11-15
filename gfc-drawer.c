@@ -135,7 +135,7 @@ drawer_realize (GtkWidget* widget)
 				  GDK_FOCUS_CHANGE_MASK |
 				  GDK_STRUCTURE_MASK);
 	attributes.type_hint = GDK_WINDOW_TYPE_HINT_NORMAL;
-	attributes.window_type = GDK_WINDOW_CHILD;
+	attributes.window_type = GDK_WINDOW_TOPLEVEL;
 
 	gint attributes_mask = 0;
 	attributes_mask |= GDK_WA_VISUAL | GDK_WA_COLORMAP | GDK_WA_TYPE_HINT;
