@@ -117,6 +117,7 @@ drawer_realize (GtkWidget* widget)
 	view_window = gdk_quartz_window_get_nsview (GTK_WIDGET (self->_private->window)->window);
 	self->_private->drawer = [[NSDrawer alloc] initWithContentSize:NSMakeSize (100,100)
 						   preferredEdge:NSMinXEdge];
+	[self->_private->drawer setParentWindow:[view_window window]];
 
 	[pool release];
 
@@ -128,7 +129,7 @@ drawer_unrealize (GtkWidget* widget)
 {
 	GfcDrawer* self = GFC_DRAWER (widget);
 
-	[self->_private->drawer dealloc];
+	[self->_private->drawer release];
 	self->_private->drawer = NULL;
 
 	GTK_WIDGET_UNSET_FLAGS (widget, GTK_REALIZED);
