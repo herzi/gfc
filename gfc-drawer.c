@@ -119,6 +119,29 @@ drawer_realize (GtkWidget* widget)
 						   preferredEdge:NSMinXEdge];
 	[self->_private->drawer setParentWindow:[view_window window]];
 
+	GdkWindowAttr attributes;
+	attributes.title = NULL;
+	attributes.wclass = GDK_INPUT_OUTPUT;
+	attributes.visual = gtk_widget_get_visual (widget);
+	attributes.colormap = gtk_widget_get_colormap (widget);
+	attributes.width = 100; // FIXME
+	attributes.height = 100; // FIXME
+	attributes.event_mask = gtk_widget_get_events (widget);
+	attributes.event_mask |= (GDK_EXPOSURE_MASK |
+				  GDK_KEY_PRESS_MASK |
+				  GDK_KEY_RELEASE_MASK |
+				  GDK_ENTER_NOTIFY_MASK |
+				  GDK_LEAVE_NOTIFY_MASK |
+				  GDK_FOCUS_CHANGE_MASK |
+				  GDK_STRUCTURE_MASK);
+	attributes.type_hint = GDK_WINDOW_TYPE_HINT_NORMAL;
+	attributes.window_type = GDK_WINDOW_CHILD;
+
+	gint attributes_mask = 0;
+	attributes_mask |= GDK_WA_VISUAL | GDK_WA_COLORMAP | GDK_WA_TYPE_HINT;
+	widget->window = gdk_window_new (gtk_widget_get_root_window (widget),
+					 &attributes, attributes_mask);
+
 	[pool release];
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
