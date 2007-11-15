@@ -152,6 +152,9 @@ drawer_unrealize (GtkWidget* widget)
 {
 	GfcDrawer* self = GFC_DRAWER (widget);
 
+	gdk_window_destroy (widget->window);
+	widget->window = NULL;
+
 	[self->_private->drawer release];
 	self->_private->drawer = NULL;
 
