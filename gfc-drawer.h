@@ -1,4 +1,4 @@
-/* This file is part of ...
+/* This file is part of libgfc
  *
  * AUTHORS
  *     Sven Herzberg
@@ -24,5 +24,12 @@
 #ifndef GFC_DRAWER_H
 #define GFC_DRAWER_H
 
+#include <gfc-window.h>
+
+G_BEGIN_DECLS
+
+GtkWidget* gfc_dock_new (GfcWindow* parent);
+
+G_END_DECLS
 
 #endif /* !GFC_DRAWER_H */
