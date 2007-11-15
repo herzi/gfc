@@ -28,7 +28,28 @@
 
 G_BEGIN_DECLS
 
-GtkWidget* gfc_window_new (void);
+typedef struct _GfcWindow        GfcWindow;
+typedef struct _GfcWindowPrivate GfcWindowPrivate;
+typedef struct _GfcWindowClass   GfcWindowClass;
+
+#define GFC_TYPE_WINDOW         (gfc_window_get_type ())
+#define GFC_WINDOW(i)           (G_TYPE_CHECK_INSTANE_CAST ((i), GFC_TYPE_WINDOW, GfcWindow))
+#define GFC_WINDOW_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), GFC_TYPE_WINDOW, GfcWindowClass))
+#define GFC_IS_WINDOW(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), GFC_TYPE_WINDOW))
+#define GFC_IS_WINDOW_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), GFC_TYPE_WINDOW))
+#define GFC_WINDOW_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), GFC_ZTYPE_WINDOW, GfcWindowClass))
+
+GType      gfc_window_get_type (void);
+GtkWidget* gfc_window_new      (void);
+
+struct _GfcWindow {
+	GtkWindow         base_instance;
+	GfcWindowPrivate* _private;
+};
+
+struct _GfcWindowClass {
+	GtkWindowClass    base_class;
+};
 
 G_END_DECLS
 

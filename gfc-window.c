@@ -23,9 +23,19 @@
 
 #include "gfc-window.h"
 
+G_DEFINE_TYPE (GfcWindow, gfc_window, GTK_TYPE_WINDOW);
+
+static void
+gfc_window_init (GfcWindow* self)
+{}
+
+static void
+gfc_window_class_init (GfcWindowClass* self_class)
+{}
+
 GtkWidget*
 gfc_window_new (void)
 {
-	return gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	return g_object_new (GFC_TYPE_WINDOW, NULL);
 }
 
