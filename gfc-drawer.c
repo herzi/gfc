@@ -28,6 +28,7 @@
 
 struct _GfcDrawerPrivate {
 	GfcWindow* window;
+	NSDrawer * drawer;
 };
 
 enum {
@@ -109,8 +110,15 @@ drawer_realize (GtkWidget* widget)
 
 	g_return_if_fail (GFC_IS_WINDOW (self->_private->window));
 	g_return_if_fail (GTK_WIDGET_REALIZED (self->_private->window));
+	g_return_if_fail (!self->_private->drawer);
+
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
 	view_window = gdk_quartz_window_get_nsview (GTK_WIDGET (self->_private->window)->window);
+	self->_private->drawer = [[NSDrawer alloc] initWithContentSize:NSMakeSize (100,100)
+						   preferredEdge:NSMinXEdge];
+
+	[pool release];
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 }
@@ -118,6 +126,11 @@ drawer_realize (GtkWidget* widget)
 static void
 drawer_unrealize (GtkWidget* widget)
 {
+	GfcDrawer* self = GFC_DRAWER (widget);
+
+	[self->_private->drawer dealloc];
+	self->_private->drawer = NULL;
+
 	GTK_WIDGET_UNSET_FLAGS (widget, GTK_REALIZED);
 }
 
