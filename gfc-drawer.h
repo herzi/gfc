@@ -43,6 +43,7 @@ GType      gfc_drawer_get_type (void);
 GtkWidget* gfc_drawer_new      (GfcWindow* parent);
 void       gfc_drawer_open     (GfcDrawer* self);
 void       gfc_drawer_close    (GfcDrawer* self);
+void       gfc_drawer_toggle   (GfcDrawer* self);
 
 struct _GfcDrawer {
 	GtkBin            base_instance;
