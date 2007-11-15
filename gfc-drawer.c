@@ -23,6 +23,9 @@
 
 #include "gfc-drawer.h"
 
+#include <gdk/quartz/gdkquartz.h>
+#include <gdk/quartz/GdkQuartzView.h>
+
 struct _GfcDrawerPrivate {
 	GfcWindow* window;
 };
@@ -102,9 +105,12 @@ static void
 drawer_realize (GtkWidget* widget)
 {
 	GfcDrawer* self = GFC_DRAWER (widget);
+	NSView   * view_window;
 
 	g_return_if_fail (GFC_IS_WINDOW (self->_private->window));
 	g_return_if_fail (GTK_WIDGET_REALIZED (self->_private->window));
+
+	view_window = gdk_quartz_window_get_nsview (GTK_WIDGET (self->_private->window)->window);
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 }
