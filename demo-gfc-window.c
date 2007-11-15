@@ -24,16 +24,30 @@
 #include <gtk/gtk.h>
 #include <gfc.h>
 
+static void
+button_clicked (GtkWidget* button,
+		GtkWidget* window)
+{
+	gfc_window_toggle_sidebar (GFC_WINDOW (window));
+}
+
 int
 main (int   argc,
       char**argv)
 {
 	GtkWidget* window;
+	GtkWidget* button;
 
 	gtk_init (&argc, &argv);
 
 	window = gfc_window_new ();
 	g_signal_connect (window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
+	button = gtk_button_new_with_label ("Toggle Sidebar");
+	g_signal_connect (button, "clicked",
+			  G_CALLBACK (button_clicked), window);
+	gtk_widget_show (button);
+	gtk_container_add (GTK_CONTAINER (window),
+			   button);
 	gtk_widget_show (window);
 	gtk_main ();
 
