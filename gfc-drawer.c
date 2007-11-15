@@ -156,11 +156,11 @@ drawer_realize (GtkWidget* widget)
 				  GDK_FOCUS_CHANGE_MASK |
 				  GDK_STRUCTURE_MASK);
 	attributes.type_hint = GDK_WINDOW_TYPE_HINT_NORMAL;
-	attributes.window_type = GDK_WINDOW_TOPLEVEL;
+	attributes.window_type = GDK_WINDOW_CHILD;
 
 	gint attributes_mask = 0;
 	attributes_mask |= GDK_WA_VISUAL | GDK_WA_COLORMAP | GDK_WA_TYPE_HINT;
-	widget->window = gdk_window_new (gtk_widget_get_root_window (widget),
+	widget->window = gdk_window_new (GTK_WIDGET (self->_private->window)->window,  //gtk_widget_get_root_window (widget),
 					 &attributes, attributes_mask);
 
 	[self->_private->drawer setContentView:gdk_quartz_window_get_nsview (widget->window)];
