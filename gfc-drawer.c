@@ -187,6 +187,6 @@ gfc_drawer_toggle (GfcDrawer* self)
 	g_return_if_fail (GFC_IS_DRAWER (self));
 	g_return_if_fail (GTK_WIDGET_REALIZED (self));
 
-	[self->_private->drawer toggle];
+	[self->_private->drawer toggle:nil];
 }
 
