@@ -23,9 +23,20 @@
 
 #include "gfc-drawer.h"
 
+G_DEFINE_TYPE (GfcDrawer, gfc_drawer, GTK_TYPE_BIN);
+
+static void
+gfc_drawer_init (GfcDrawer* self)
+{}
+
+static void
+gfc_drawer_class_init (GfcDrawerClass* self_class)
+{}
+
 GtkWidget*
 gfc_drawer_new (GfcWindow* parent)
 {
-	return NULL;
+	return g_object_new (GFC_TYPE_DRAWER,
+			     NULL);
 }
 

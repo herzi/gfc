@@ -29,10 +29,27 @@
 G_BEGIN_DECLS
 
 typedef struct _GfcDrawer        GfcDrawer;
+typedef struct _GfcDrawerPrivate GfcDrawerPrivate;
+typedef struct _GfcDrawerClass   GfcDrawerClass;
 
-#define GFC_DRAWER(i) ((GfcDrawer*)(i))
+#define GFC_TYPE_DRAWER         (gfc_drawer_get_type ())
+#define GFC_DRAWER(i)           (G_TYPE_CHECK_INSTANCE_CAST ((i), GFC_TYPE_DRAWER, GfcDrawer))
+#define GFC_DRAWER_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), GFC_TYPE_DRAWER, GfcDrawerClass))
+#define GFC_IS_DRAWER(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), GFC_TYPE_DRAWER))
+#define GFC_IS_DRAWER_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), GFC_TYPE_DRAWER))
+#define GFC_DRAWER_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), GFC_TYPE_DRAWER, GfcDrawerClass))
 
-GtkWidget* gfc_drawer_new (GfcWindow* parent);
+GType      gfc_drawer_get_type (void);
+GtkWidget* gfc_drawer_new      (GfcWindow* parent);
+
+struct _GfcDrawer {
+	GtkBin            base_instance;
+	GfcDrawerPrivate* _private;
+};
+
+struct _GfcDrawerClass {
+	GtkBinClass       base_class;
+};
 
 G_END_DECLS
 
