@@ -316,7 +316,7 @@ gfc_job_class_init (GfcJobClass* self_class)
 					 g_param_spec_string ("command", NULL, NULL,
 							      NULL, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class, PROP_WORKING_FOLDER,
-					 g_param_spec_string ("working-folder", NULL, NULL,
+					 g_param_spec_string ("working-folder", "working-folder", "working-folder",
 							      NULL, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	gfc_job_signals[DONE] = g_signal_new ("done", GFC_TYPE_JOB,
