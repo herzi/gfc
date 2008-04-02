@@ -1,4 +1,4 @@
-noinst_LTLIBRARIES=\
+noinst_LTLIBRARIES+=\
 	libgfc.la \
 	$(NULL)
 gfc_tests=\
@@ -16,6 +16,8 @@ libgfc_la_SOURCES=\
 	$(gfc_src_dir)/gfc-reader.c \
 	$(gfc_src_dir)/gfc-reader.h \
 	$(NULL)
+libgfc_la_CPPFLAGS=$(GFC_CFLAGS)
+libgfc_la_LIBADD=$(GFC_LIBS)
 
 libgfc_test_la_SOURCES=\
 	$(gfc_src_dir)/gfc-test.c \
@@ -25,21 +27,25 @@ libgfc_test_la_SOURCES=\
 	$(gfc_src_dir)/gfc-test-main.c \
 	$(gfc_src_dir)/gfc-test-main.h \
 	$(NULL)
+libgfc_test_la_CPPFLAGS=$(GFC_CFLAGS)
+libgfc_test_la_LIBADD=$(GFC_LIBS)
 
 check_gfc_reader_SOURCES=\
 	$(gfc_src_dir)/check-gfc-reader.c \
 	$(NULL)
+check_gfc_reader_CPPFLAGS=$(GFC_CFLAGS) -I$(srcdir)/$(gfc_src_dir)
 check_gfc_reader_LDADD=\
 	libgfc.la \
 	libgfc-test.la \
-	$(LDADD) \
+	$(GFC_LIBS) \
 	$(NULL)
 
 check_gfc_main_loop_SOURCES=\
 	$(gfc_src_dir)/check-gfc-main-loop.c \
 	$(NULL)
+check_gfc_main_loop_CPPFLAGS=$(GFC_CFLAGS) -I$(srcdir)/$(gfc_src_dir)
 check_gfc_main_loop_LDADD=\
 	libgfc-test.la \
-	$(LDADD) \
+	$(GFC_LIBS) \
 	$(NULL)
 
