@@ -31,12 +31,14 @@ typedef enum {
 
 struct _GfcJobPrivate {
 	GfcJobState  state;
+	gchar      * working_folder;
 	gchar      **argv;
 };
 
 enum {
 	PROP_0,
-	PROP_ARGV
+	PROP_ARGV,
+	PROP_WORKING_FOLDER
 };
 
 G_DEFINE_TYPE (GfcJob, gfc_job, G_TYPE_OBJECT);
@@ -70,6 +72,7 @@ job_finalize (GObject* object)
 {
 	GfcJob* self = GFC_JOB (object);
 
+	g_free (self->_private->working_folder);
 	g_strfreev (self->_private->argv);
 
 	G_OBJECT_CLASS (gfc_job_parent_class)->finalize (object);
@@ -86,6 +89,9 @@ job_get_property (GObject   * object,
 	switch (prop_id) {
 	case PROP_ARGV:
 		g_value_set_boxed (value, self->_private->argv);
+		break;
+	case PROP_WORKING_FOLDER:
+		g_value_set_string (value, self->_private->working_folder);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -111,6 +117,13 @@ job_set_property (GObject     * object,
 		self->_private->argv = g_value_dup_boxed (value);
 		g_object_notify (object, "argv");
 		break;
+	case PROP_WORKING_FOLDER:
+		g_return_if_fail (self->_private->state == GFC_JOB_SETUP);
+		g_return_if_fail (!self->_private->working_folder);
+
+		self->_private->working_folder = g_value_dup_string (value);
+		g_object_notify (object, "working-folder");
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -130,6 +143,9 @@ gfc_job_class_init (GfcJobClass* self_class)
 	g_object_class_install_property (object_class, PROP_ARGV,
 					 g_param_spec_boxed ("argv", "argv", "argv",
 							     G_TYPE_STRV, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class, PROP_WORKING_FOLDER,
+					 g_param_spec_boxed ("working-folder", NULL, NULL,
+							     G_TYPE_STRING, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_type_class_add_private (self_class, sizeof (GfcJobPrivate));
 }
@@ -151,5 +167,13 @@ gfc_job_get_command (GfcJob const* self)
 	return self->_private->argv ?
 	       self->_private->argv[0] :
 	       NULL;
+}
+
+gchar const*
+gfc_job_get_working_folder (GfcJob const* self)
+{
+	g_return_val_if_fail (GFC_IS_JOB (self), NULL);
+
+	return self->_private->working_folder;
 }
 
