@@ -1,9 +1,9 @@
 /* This file is part of libgfc
  *
  * AUTHORS
- *     Sven Herzberg  <set the EMAIL_ADDRESS environment variable>
+ *     Sven Herzberg  <sven@imendio.com>
  *
- * Copyright (C) 2007  Sven Herzberg
+ * Copyright (C) 2007,2008  Sven Herzberg
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -38,6 +38,7 @@ struct _GfcJobPrivate {
 enum {
 	PROP_0,
 	PROP_ARGV,
+	PROP_COMMAND,
 	PROP_WORKING_FOLDER
 };
 
@@ -90,6 +91,9 @@ job_get_property (GObject   * object,
 	case PROP_ARGV:
 		g_value_set_boxed (value, self->_private->argv);
 		break;
+	case PROP_COMMAND:
+		g_value_set_string (value, gfc_job_get_command (GFC_JOB (self)));
+		break;
 	case PROP_WORKING_FOLDER:
 		g_value_set_string (value, self->_private->working_folder);
 		break;
@@ -106,6 +110,7 @@ job_set_property (GObject     * object,
 		  GParamSpec  * pspec)
 {
 	GfcJob* self = GFC_JOB (object);
+	gchar** argv;
 
 	switch (prop_id) {
 	case PROP_ARGV:
@@ -116,6 +121,18 @@ job_set_property (GObject     * object,
 		g_return_if_fail (!self->_private->argv);
 		self->_private->argv = g_value_dup_boxed (value);
 		g_object_notify (object, "argv");
+		break;
+	case PROP_COMMAND:
+		if (!g_value_get_string (value)) {
+			break;
+		}
+		argv = g_new0 (gchar*, 2);
+		argv[0] = g_value_dup_string (value);
+		g_object_set (object,
+			      "argv", argv,
+			      NULL);
+		g_strfreev (argv);
+		g_object_notify (object, "command");
 		break;
 	case PROP_WORKING_FOLDER:
 		g_return_if_fail (self->_private->state == GFC_JOB_SETUP);
@@ -143,6 +160,9 @@ gfc_job_class_init (GfcJobClass* self_class)
 	g_object_class_install_property (object_class, PROP_ARGV,
 					 g_param_spec_boxed ("argv", "argv", "argv",
 							     G_TYPE_STRV, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class, PROP_COMMAND,
+					 g_param_spec_boxed ("command", NULL, NULL,
+							     G_TYPE_STRING, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class, PROP_WORKING_FOLDER,
 					 g_param_spec_boxed ("working-folder", NULL, NULL,
 							     G_TYPE_STRING, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
