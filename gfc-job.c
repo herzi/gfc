@@ -42,6 +42,13 @@ enum {
 	PROP_WORKING_FOLDER
 };
 
+enum {
+	DONE,
+	N_SIGNALS
+};
+
+static guint gfc_job_signals[N_SIGNALS] = {0};
+
 G_DEFINE_TYPE (GfcJob, gfc_job, G_TYPE_OBJECT);
 
 static void
@@ -166,6 +173,13 @@ gfc_job_class_init (GfcJobClass* self_class)
 	g_object_class_install_property (object_class, PROP_WORKING_FOLDER,
 					 g_param_spec_boxed ("working-folder", NULL, NULL,
 							     G_TYPE_STRING, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	gfc_job_signals[DONE] = g_signal_new ("done", P_TYPE_JOB,
+					      G_SIGNAL_RUN_LAST, 0, // FIXME: add default handler to release the pid
+					      NULL, NULL,
+					      g_cclosure_marshal_VOID__VOID,
+					      G_TYPE_NONE,
+					      0);
 
 	g_type_class_add_private (self_class, sizeof (GfcJobPrivate));
 }
