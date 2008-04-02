@@ -1,9 +1,9 @@
 /* This file is part of libgfc
  *
  * AUTHORS
- *     Sven Herzberg  <set the EMAIL_ADDRESS environment variable>
+ *     Sven Herzberg  <sven@imendio.com>
  *
- * Copyright (C) 2007  Sven Herzberg
+ * Copyright (C) 2007, 2008  Sven Herzberg
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
