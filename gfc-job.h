@@ -42,9 +42,12 @@ typedef struct _GfcJobClass   GfcJobClass;
 GType        gfc_job_get_type           (void);
 gchar**      gfc_job_get_argv           (GfcJob const* self);
 gchar const* gfc_job_get_command        (GfcJob const* self);
+GfcReader*   gfc_job_get_err_reader     (GfcJob const* self);
 GfcReader*   gfc_job_get_out_reader     (GfcJob const* self);
 gchar const* gfc_job_get_working_folder (GfcJob const* self);
 #ifndef FIXME_HIDE_PRIVATE_APIS
+void         gfc_job_set_err_reader     (GfcJob      * self,
+					 GfcReader   * reader);
 void         gfc_job_set_out_reader     (GfcJob      * self,
 					 GfcReader   * reader);
 #endif
