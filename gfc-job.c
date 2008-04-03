@@ -261,8 +261,9 @@ job_set_property (GObject     * object,
 		  GValue const* value,
 		  GParamSpec  * pspec)
 {
-	GfcJob* self = GFC_JOB (object);
-	gchar** argv;
+	GError* error = NULL;
+	GfcJob* self  = GFC_JOB (object);
+	gchar **argv  = NULL;
 
 	switch (prop_id) {
 	case PROP_ARGV:
@@ -278,13 +279,23 @@ job_set_property (GObject     * object,
 		if (!g_value_get_string (value)) {
 			break;
 		}
-		argv = g_new0 (gchar*, 2);
-		argv[0] = g_value_dup_string (value);
-		g_object_set (object,
-			      "argv", argv,
-			      NULL);
-		g_strfreev (argv);
-		g_object_notify (object, "command");
+		if (g_shell_parse_argv (g_value_get_string (value),
+					NULL,
+					&argv,
+					&error))
+		{
+			g_object_set (object,
+				      "argv", argv,
+				      NULL);
+			g_strfreev (argv);
+			g_object_notify (object, "command");
+		} else {
+			g_warning ("%s: error escaping command:\ncommand: \"%s\"\nerror:   %s",
+				   G_STRFUNC,
+				   g_value_get_string (value),
+				   error ? error->message : "(none)");
+			g_clear_error (&error);
+		}
 		break;
 	case PROP_WORKING_FOLDER:
 		g_return_if_fail (self->_private->state == GFC_JOB_SETUP);
