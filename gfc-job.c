@@ -33,6 +33,11 @@ typedef enum {
 	GFC_JOB_DONE
 } GfcJobState;
 
+/* FIXME: some rewrite planned
+ * The job should have a status field. The available private fields should not
+ * depend on the status. Instead, there should be a status_data union (which
+ * basically works like GdkEvent. */
+
 struct _GfcJobPrivate {
 	/* state indicating the object's state */
 	GfcJobState  state;
