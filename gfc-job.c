@@ -38,6 +38,7 @@ struct _GfcJobPrivate {
 	gchar      **argv;
 
 	/* data for GFC_JOB_EXECUTE */
+	GfcReader  * err_reader;
 	GfcReader  * out_reader;
 };
 
@@ -89,7 +90,16 @@ job_finalize (GObject* object)
 	g_free (self->_private->working_folder);
 	g_strfreev (self->_private->argv);
 
+	if (self->_private->err_reader) {
+		// FIXME: move to dispose
+		// FIXME: try to assert for NULL
+		g_object_unref (self->_private->err_reader);
+		self->_private->err_reader = NULL;
+	}
+
 	if (self->_private->out_reader) {
+		// FIXME: move to dispose
+		// FIXME: try to assert for NULL
 		g_object_unref (self->_private->out_reader);
 		self->_private->out_reader = NULL;
 	}
@@ -215,6 +225,14 @@ gfc_job_get_command (GfcJob const* self)
 }
 
 GfcReader*
+gfc_job_get_err_reader (GfcJob const* self)
+{
+	g_return_val_if_fail (GFC_IS_JOB (self), NULL);
+
+	return self->_private->err_reader;
+}
+
+GfcReader*
 gfc_job_get_out_reader (GfcJob const* self)
 {
 	g_return_val_if_fail (GFC_IS_JOB (self), NULL);
@@ -231,10 +249,32 @@ gfc_job_get_working_folder (GfcJob const* self)
 }
 
 void
+gfc_job_set_err_reader (GfcJob   * self,
+			GfcReader* reader)
+{
+	g_return_if_fail (GFC_IS_JOB (self));
+	g_return_if_fail (!reader || GFC_IS_READER (reader));
+
+	if (self->_private->err_reader == reader) {
+		return;
+	}
+
+	if (self->_private->err_reader) {
+		g_object_unref (self->_private->err_reader);
+		self->_private->err_reader = NULL;
+	}
+
+	if (reader) {
+		self->_private->err_reader = g_object_ref (reader);
+	}
+}
+
+void
 gfc_job_set_out_reader (GfcJob   * self,
 			GfcReader* reader)
 {
 	g_return_if_fail (GFC_IS_JOB (self));
+	g_return_if_fail (!reader || GFC_IS_READER (reader));
 
 	if (self->_private->out_reader == reader) {
 		return;
