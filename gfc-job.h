@@ -24,7 +24,7 @@
 #ifndef GFC_JOB_H
 #define GFC_JOB_H
 
-#include <glib-object.h>
+#include "gfc-reader.h"
 
 G_BEGIN_DECLS
 
@@ -42,7 +42,12 @@ typedef struct _GfcJobClass   GfcJobClass;
 GType        gfc_job_get_type           (void);
 gchar**      gfc_job_get_argv           (GfcJob const* self);
 gchar const* gfc_job_get_command        (GfcJob const* self);
+GfcReader*   gfc_job_get_out_reader     (GfcJob const* self);
 gchar const* gfc_job_get_working_folder (GfcJob const* self);
+#ifndef FIXME_HIDE_PRIVATE_APIS
+void         gfc_job_set_out_reader     (GfcJob      * self,
+					 GfcReader   * reader);
+#endif
 
 struct _GfcJob {
 	GObject        base_instance;
