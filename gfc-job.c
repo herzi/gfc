@@ -40,6 +40,7 @@ struct _GfcJobPrivate {
 	/* data for GFC_JOB_EXECUTE */
 	GfcReader  * err_reader;
 	GfcReader  * out_reader;
+	GPid         pid;
 
 	/* data for GFC_JOB_DONE */
 	gint         return_code;
@@ -106,6 +107,10 @@ job_finalize (GObject* object)
 		// FIXME: try to assert for NULL
 		g_object_unref (self->_private->out_reader);
 		self->_private->out_reader = NULL;
+	}
+
+	if (self->_private->pid) {
+		g_spawn_close_pid (self->_private->pid);
 	}
 
 	G_OBJECT_CLASS (gfc_job_parent_class)->finalize (object);
@@ -193,11 +198,11 @@ gfc_job_class_init (GfcJobClass* self_class)
 					 g_param_spec_boxed ("argv", "argv", "argv",
 							     G_TYPE_STRV, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class, PROP_COMMAND,
-					 g_param_spec_boxed ("command", NULL, NULL,
-							     G_TYPE_STRING, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_string ("command", NULL, NULL,
+							      NULL, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class, PROP_WORKING_FOLDER,
-					 g_param_spec_boxed ("working-folder", NULL, NULL,
-							     G_TYPE_STRING, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_string ("working-folder", NULL, NULL,
+							      NULL, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	gfc_job_signals[DONE] = g_signal_new ("done", GFC_TYPE_JOB,
 					      G_SIGNAL_RUN_LAST, 0, // FIXME: add default handler to release the pid
@@ -251,6 +256,14 @@ gfc_job_get_out_reader (GfcJob const* self)
 	g_return_val_if_fail (GFC_IS_JOB (self), NULL);
 
 	return self->_private->out_reader;
+}
+
+GPid
+gfc_job_get_pid (GfcJob const* self)
+{
+	g_return_val_if_fail (GFC_IS_JOB (self), 0);
+
+	return self->_private->pid;
 }
 
 gint
@@ -320,6 +333,15 @@ gfc_job_set_out_reader (GfcJob   * self,
 	if (reader) {
 		self->_private->out_reader = g_object_ref (reader);
 	}
+}
+
+void
+gfc_job_set_pid (GfcJob* self,
+		 GPid    pid)
+{
+	g_return_if_fail (GFC_IS_JOB (self));
+
+	self->_private->pid = pid;
 }
 
 void
