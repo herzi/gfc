@@ -43,6 +43,7 @@ struct _GfcJobPrivate {
 
 	/* data for GFC_JOB_DONE */
 	gint         return_code;
+	guint        exited : 1;
 };
 
 enum {
@@ -235,6 +236,15 @@ gfc_job_get_err_reader (GfcJob const* self)
 	return self->_private->err_reader;
 }
 
+gboolean
+gfc_job_get_exited (GfcJob const* self)
+{
+	g_return_val_if_fail (GFC_IS_JOB (self), FALSE);
+	g_return_val_if_fail (self->_private->state == GFC_JOB_DONE, FALSE);
+
+	return self->_private->exited;
+}
+
 GfcReader*
 gfc_job_get_out_reader (GfcJob const* self)
 {
@@ -279,6 +289,16 @@ gfc_job_set_err_reader (GfcJob   * self,
 	if (reader) {
 		self->_private->err_reader = g_object_ref (reader);
 	}
+}
+
+void
+gfc_job_set_exited (GfcJob  * self,
+		    gboolean  exited)
+{
+	g_return_if_fail (GFC_IS_JOB (self));
+	g_return_if_fail (self->_private->state == GFC_JOB_DONE);
+
+	self->_private->exited = exited;
 }
 
 void
