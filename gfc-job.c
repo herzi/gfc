@@ -413,6 +413,16 @@ gfc_job_kill (GfcJob* self)
 	}
 }
 
+GfcJob*
+gfc_job_new (gchar const* working_folder,
+	     gchar const* command)
+{
+	return g_object_new (GFC_TYPE_JOB,
+			     "working-folder", working_folder,
+			     "command",        command,
+			     NULL);
+}
+
 void
 gfc_job_set_err_reader (GfcJob   * self,
 			GfcReader* reader)

@@ -49,6 +49,8 @@ GPid         gfc_job_get_pid            (GfcJob const* self);
 gint         gfc_job_get_return_code    (GfcJob const* self);
 gchar const* gfc_job_get_working_folder (GfcJob const* self);
 gboolean     gfc_job_kill               (GfcJob      * self);
+GfcJob*      gfc_job_new                (gchar const * working_folder,
+					 gchar const * command);
 #ifndef FIXME_HIDE_PRIVATE_APIS
 void         gfc_job_set_err_reader     (GfcJob      * self,
 					 GfcReader   * reader);
