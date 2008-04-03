@@ -23,6 +23,10 @@
 
 #include "gfc-job.h"
 
+#include <errno.h>
+#include <signal.h>
+#include <sys/wait.h>
+
 typedef enum {
 	GFC_JOB_SETUP,
 	GFC_JOB_EXECUTE,
@@ -41,6 +45,7 @@ struct _GfcJobPrivate {
 	GfcReader  * err_reader;
 	GfcReader  * out_reader;
 	GPid         pid;
+	guint        child_watch_tag;
 
 	/* data for GFC_JOB_DONE */
 	gint         return_code;
@@ -73,12 +78,111 @@ gfc_job_init (GfcJob* self)
 }
 
 static void
+job_set_status (GfcJob  * self,
+		gint      return_code,
+		gboolean  exited)
+{
+	GError* error = NULL;
+
+	gfc_job_set_return_code (GFC_JOB (self), return_code);
+	gfc_job_set_exited      (GFC_JOB (self), exited);
+
+	/* usually the application code will unref() the job in the done signal handler */
+	g_object_ref (self);
+
+	// FIXME: emit the signal by id once the emission is moved into the GfcJob
+	g_signal_emit_by_name (self, "done");
+
+	g_io_channel_shutdown (gfc_reader_get_channel (gfc_job_get_out_reader (GFC_JOB (self))),
+			       TRUE,
+			       &error);
+
+	if (error) {
+		g_warning ("problem closing stdout communication with child process: %s",
+			   error->message);
+		g_error_free (error);
+		error = NULL;
+	}
+
+	gfc_job_set_out_reader (GFC_JOB (self), NULL);
+
+	g_io_channel_shutdown (gfc_reader_get_channel (gfc_job_get_err_reader (GFC_JOB (self))),
+			       TRUE,
+			       &error);
+
+	if (error) {
+		g_warning ("problem closing stderr communication with child process: %s",
+			   error->message);
+		g_error_free (error);
+		error = NULL;
+	}
+
+	gfc_job_set_err_reader (GFC_JOB (self), NULL);
+
+	g_object_unref (self);
+}
+
+static void
+job_child_watch_cb (GPid     pid,
+		    gint     status,
+		    gpointer data)
+{
+	GfcJob* self = GFC_JOB (data);
+
+	g_spawn_close_pid (pid);
+	gfc_job_set_pid (GFC_JOB (self),
+			 0);
+
+	job_set_status (self,
+			WEXITSTATUS (status),
+			WIFEXITED (status));
+}
+
+static void
 job_constructed (GObject* object)
 {
 	GfcJob* self = GFC_JOB (object);
 
-	// FIXME: spawn process and connect to the watch
-	// FIXME: after executing the process make sure the state gets set to done
+	gboolean  success = FALSE;
+	GError  * error   = NULL;
+	gint      out     = 0;
+	gint      err     = 0;
+	GPid      pid     = 0;
+
+	/* FIXME: use a GfcSpawnStrategy (GfcSpawnSimple by default) to
+	 * determine the spawn function; GfcSpawnGdk will do the job for the
+	 * integrated widget behavior */
+	success = g_spawn_async_with_pipes (gfc_job_get_working_folder (GFC_JOB (self)),
+					    gfc_job_get_argv (GFC_JOB (self)),
+						  NULL,
+						  G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD,
+						  NULL, NULL,
+					    &pid,
+						  NULL, // in
+						  &out, // has to be set for some reason (otherwise stderr from gcc gets printed in stdout from make *?*)
+						  &err,
+						  &error);
+
+	if (!success) {
+		g_warning ("Error executing command \"%s\" in \"%s\": %s",
+			   gfc_job_get_command (GFC_JOB (self)),
+			   gfc_job_get_working_folder (GFC_JOB (self)),
+			   error->message);
+		g_error_free (error);
+		// FIXME: set up an idle handler that invokes "canceled"
+	} else {
+		gfc_job_set_out_reader (GFC_JOB (self),
+					gfc_reader_new (out));
+		g_object_unref (gfc_job_get_out_reader (GFC_JOB (self)));
+		gfc_job_set_err_reader (GFC_JOB (self),
+					gfc_reader_new (err));
+		g_object_unref (gfc_job_get_err_reader (GFC_JOB (self)));
+		gfc_job_set_pid (GFC_JOB (self),
+				 pid);
+		self->_private->child_watch_tag = g_child_watch_add (pid,
+								     job_child_watch_cb,
+								     self);
+	}
 
 	self->_private->state = GFC_JOB_EXECUTE;
 
@@ -94,6 +198,12 @@ job_finalize (GObject* object)
 
 	g_free (self->_private->working_folder);
 	g_strfreev (self->_private->argv);
+
+	// FIXME: kill the process
+
+	if (self->_private->child_watch_tag) {
+		g_source_remove (self->_private->child_watch_tag);
+	}
 
 	if (self->_private->err_reader) {
 		// FIXME: move to dispose
@@ -281,6 +391,26 @@ gfc_job_get_working_folder (GfcJob const* self)
 	g_return_val_if_fail (GFC_IS_JOB (self), NULL);
 
 	return self->_private->working_folder;
+}
+
+gboolean
+gfc_job_kill (GfcJob* self)
+{
+	g_return_val_if_fail (GFC_IS_JOB (self), FALSE);
+	g_return_val_if_fail (gfc_job_get_pid (GFC_JOB (self)), FALSE);
+
+	if (kill (gfc_job_get_pid (GFC_JOB (self)), SIGKILL) != 0) {
+		g_warning ("Error killing process: %s",
+			   g_strerror (errno));
+		return FALSE;
+	} else {
+		g_spawn_close_pid (gfc_job_get_pid (GFC_JOB (self)));
+		gfc_job_set_pid (GFC_JOB (self), 0);
+		/* FIXME: I actually think that this should be triggered by the
+		 * child watch anyways - test case needed */
+		job_set_status (self, 1, FALSE); // FIXME: maybe add is_killed()
+		return TRUE;
+	}
 }
 
 void
