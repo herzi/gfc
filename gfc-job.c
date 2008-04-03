@@ -30,9 +30,15 @@ typedef enum {
 } GfcJobState;
 
 struct _GfcJobPrivate {
+	/* state indicating the object's state */
 	GfcJobState  state;
+
+	/* data for GFC_JOB_SETUP (also valid later) */
 	gchar      * working_folder;
 	gchar      **argv;
+
+	/* data for GFC_JOB_EXECUTE */
+	GfcReader  * out_reader;
 };
 
 enum {
@@ -82,6 +88,11 @@ job_finalize (GObject* object)
 
 	g_free (self->_private->working_folder);
 	g_strfreev (self->_private->argv);
+
+	if (self->_private->out_reader) {
+		g_object_unref (self->_private->out_reader);
+		self->_private->out_reader = NULL;
+	}
 
 	G_OBJECT_CLASS (gfc_job_parent_class)->finalize (object);
 }
@@ -174,7 +185,7 @@ gfc_job_class_init (GfcJobClass* self_class)
 					 g_param_spec_boxed ("working-folder", NULL, NULL,
 							     G_TYPE_STRING, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
-	gfc_job_signals[DONE] = g_signal_new ("done", P_TYPE_JOB,
+	gfc_job_signals[DONE] = g_signal_new ("done", GFC_TYPE_JOB,
 					      G_SIGNAL_RUN_LAST, 0, // FIXME: add default handler to release the pid
 					      NULL, NULL,
 					      g_cclosure_marshal_VOID__VOID,
@@ -203,11 +214,39 @@ gfc_job_get_command (GfcJob const* self)
 	       NULL;
 }
 
+GfcReader*
+gfc_job_get_out_reader (GfcJob const* self)
+{
+	g_return_val_if_fail (GFC_IS_JOB (self), NULL);
+
+	return self->_private->out_reader;
+}
+
 gchar const*
 gfc_job_get_working_folder (GfcJob const* self)
 {
 	g_return_val_if_fail (GFC_IS_JOB (self), NULL);
 
 	return self->_private->working_folder;
+}
+
+void
+gfc_job_set_out_reader (GfcJob   * self,
+			GfcReader* reader)
+{
+	g_return_if_fail (GFC_IS_JOB (self));
+
+	if (self->_private->out_reader == reader) {
+		return;
+	}
+
+	if (self->_private->out_reader) {
+		g_object_unref (self->_private->out_reader);
+		self->_private->out_reader = NULL;
+	}
+
+	if (reader) {
+		self->_private->out_reader = g_object_ref (reader);
+	}
 }
 
