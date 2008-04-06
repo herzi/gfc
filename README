@@ -1,0 +1,11 @@
+README for GFC
+==============
+
+GFC is a collection of classes that I regularly re-use in my projects; thus,
+it's usually used as a git-submodule for other projects. It contains:
+
+ * GfcJob: a helpful class for executing commands and probably parsing their
+   output
+ * GfcReader: a class built on top of GIOChannel which permits simple line-
+   based parsing
+
