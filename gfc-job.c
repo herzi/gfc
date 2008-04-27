@@ -98,30 +98,7 @@ job_set_status (GfcJob  * self,
 	// FIXME: emit the signal by id once the emission is moved into the GfcJob
 	g_signal_emit_by_name (self, "done");
 
-	g_io_channel_shutdown (gfc_reader_get_channel (gfc_job_get_out_reader (GFC_JOB (self))),
-			       TRUE,
-			       &error);
-
-	if (error) {
-		g_warning ("problem closing stdout communication with child process: %s",
-			   error->message);
-		g_error_free (error);
-		error = NULL;
-	}
-
 	gfc_job_set_out_reader (GFC_JOB (self), NULL);
-
-	g_io_channel_shutdown (gfc_reader_get_channel (gfc_job_get_err_reader (GFC_JOB (self))),
-			       TRUE,
-			       &error);
-
-	if (error) {
-		g_warning ("problem closing stderr communication with child process: %s",
-			   error->message);
-		g_error_free (error);
-		error = NULL;
-	}
-
 	gfc_job_set_err_reader (GFC_JOB (self), NULL);
 
 	g_object_unref (self);

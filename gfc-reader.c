@@ -83,6 +83,7 @@ io_watch_cb (GIOChannel  * channel,
 		case G_IO_STATUS_ERROR:
 		case G_IO_STATUS_EOF:
 			// FIXME: call g_source_remove() here instead of flush()?
+			g_source_remove (self->_private->io_handler);
 			self->_private->io_handler = 0;
 			g_string_free (buffer, TRUE);
 			return FALSE;
@@ -110,6 +111,27 @@ reader_constructed (GObject* object)
 	if (G_OBJECT_CLASS (gfc_reader_parent_class)->constructed) {
 		G_OBJECT_CLASS (gfc_reader_parent_class)->constructed (object);
 	}
+}
+
+static void
+reader_finalize (GObject* object)
+{
+	GfcReader* self = GFC_READER (object);
+
+	/* FIXME: ideally this is not necessary, but somehow we get a problem
+	 * rev-browser if we don't do this here */
+	if (self->_private->io_handler) {
+		// FIXME: check: move to dispose and flush() ?
+		g_source_remove (self->_private->io_handler);
+	}
+
+	g_io_channel_shutdown (self->_private->channel,
+			       TRUE,
+			       NULL); // FIXME: check error
+
+	g_io_channel_unref (self->_private->channel);
+
+	G_OBJECT_CLASS (gfc_reader_parent_class)->finalize (object);
 }
 
 static void
@@ -155,6 +177,7 @@ gfc_reader_class_init (GfcReaderClass* self_class)
 	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
 
 	object_class->constructed  = reader_constructed;
+	object_class->finalize     = reader_finalize;
 	object_class->get_property = reader_get_property;
 	object_class->set_property = reader_set_property;
 
