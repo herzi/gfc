@@ -1,3 +1,5 @@
+# vim:ft=automake:
+
 noinst_LTLIBRARIES+=\
 	libgfc.la \
 	$(NULL)
@@ -15,9 +17,14 @@ libgfc_la_SOURCES=\
 	$(gfc_src_dir)/gfc-job.h \
 	$(gfc_src_dir)/gfc-reader.c \
 	$(gfc_src_dir)/gfc-reader.h \
+	$(gfc_src_dir)/gfc-desktop.h \
 	$(NULL)
 libgfc_la_CPPFLAGS=$(GFC_CFLAGS)
 libgfc_la_LIBADD=$(GFC_LIBS)
+
+if WITH_GNOME
+libgfc_la_SOURCES+=$(gfc_src_dir)/gfc-desktop-gnome.c
+endif
 
 libgfc_test_la_SOURCES=\
 	$(gfc_src_dir)/gfc-test.c \
