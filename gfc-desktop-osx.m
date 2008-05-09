@@ -29,7 +29,7 @@ gchar*
 gfc_desktop_get_monospace_font (void)
 {
 	NSFont* font = [NSFont userFixedPitchFontOfSize:-1.0];
-	return g_strdup_printf ("%s %d",
+	return g_strdup_printf ("%s %.0f",
 				[[font familyName] cStringUsingEncoding:NSUTF8StringEncoding],
-				(int)[NSFont systemFontSize]);
+				[font pointSize]);
 }
