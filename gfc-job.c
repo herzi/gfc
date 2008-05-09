@@ -87,8 +87,6 @@ job_set_status (GfcJob  * self,
 		gint      return_code,
 		gboolean  exited)
 {
-	GError* error = NULL;
-
 	gfc_job_set_return_code (GFC_JOB (self), return_code);
 	gfc_job_set_exited      (GFC_JOB (self), exited);
 
@@ -131,6 +129,14 @@ job_constructed (GObject* object)
 	gint      err     = 0;
 	GPid      pid     = 0;
 
+	if (G_UNLIKELY (!gfc_job_get_argv (GFC_JOB (self)))) {
+		g_warning ("no command or argument vector has been set");
+
+		self->_private->state = GFC_JOB_DONE;
+
+		goto finish;
+	}
+
 	/* FIXME: use a GfcSpawnStrategy (GfcSpawnSimple by default) to
 	 * determine the spawn function; GfcSpawnGdk will do the job for the
 	 * integrated widget behavior */
@@ -168,6 +174,7 @@ job_constructed (GObject* object)
 
 	self->_private->state = GFC_JOB_EXECUTE;
 
+finish:
 	if (G_OBJECT_CLASS (gfc_job_parent_class)->constructed) {
 		G_OBJECT_CLASS (gfc_job_parent_class)->constructed (object);
 	}
