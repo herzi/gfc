@@ -26,7 +26,7 @@ if WITH_GNOME
 libgfc_la_SOURCES+=$(gfc_src_dir)/gfc-desktop-gnome.c
 endif
 if WITH_OSX
-libgfc_la_SOURCES+=$(gfc_src_dir)/gfc-desktop-osx.c
+libgfc_la_SOURCES+=$(gfc_src_dir)/gfc-desktop-osx.m
 endif
 
 libgfc_test_la_SOURCES=\

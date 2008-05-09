@@ -23,8 +23,13 @@
 
 #include "gfc-desktop.h"
 
+#import <AppKit/NSFont.h>
+
 gchar*
 gfc_desktop_get_monospace_font (void)
 {
-	return g_strdup ("monospace 14");
+	NSFont* font = [NSFont userFixedPitchFontOfSize:-1.0];
+	return g_strdup_printf ("%s %d",
+				[[font familyName] cStringUsingEncoding:NSUTF8StringEncoding],
+				(int)[NSFont systemFontSize]);
 }

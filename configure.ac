@@ -16,4 +16,13 @@ PKG_CHECK_MODULES(GCONF,[gconf-2.0],[gfc_has_gconf=yes],[gfc_has_gconf=no])
 AM_CONDITIONAL(WITH_GNOME,[test "x$gfc_has_gconf" = "xyes"])
 AM_CONDITIONAL(WITH_OSX,[test "x$gfc_has_gconf" != "xyes"])
 
+if test "x${gfc_has_gconf}" != "xyes"; then
+	AC_PROG_OBJC
+
+	PLATFORM_CFLAGS=
+	PLATFORM_LIBS="-framework AppKit"
+	AC_SUBST(PLATFORM_CFLAGS)
+	AC_SUBST(PLATFORM_LIBS)
+fi
+
 AC_OUTPUT(Makefile)
