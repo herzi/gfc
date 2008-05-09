@@ -14,5 +14,6 @@ PKG_CHECK_MODULES(GFC,[glib-2.0 gobject-2.0])
 gfc_has_gconf=
 PKG_CHECK_MODULES(GCONF,[gconf-2.0],[gfc_has_gconf=yes],[gfc_has_gconf=no])
 AM_CONDITIONAL(WITH_GNOME,[test "x$gfc_has_gconf" = "xyes"])
+AM_CONDITIONAL(WITH_OSX,[test "x$gfc_has_gconf" != "xyes"])
 
 AC_OUTPUT(Makefile)
