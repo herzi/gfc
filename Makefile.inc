@@ -13,11 +13,13 @@ check_LTLIBRARIES+=libgfc-test.la
 TESTS+=$(gfc_tests)
 
 libgfc_la_SOURCES=\
+	$(gfc_src_dir)/gfc-desktop.h \
 	$(gfc_src_dir)/gfc-job.c \
 	$(gfc_src_dir)/gfc-job.h \
 	$(gfc_src_dir)/gfc-reader.c \
 	$(gfc_src_dir)/gfc-reader.h \
-	$(gfc_src_dir)/gfc-desktop.h \
+	$(gfc_src_dir)/gfc-spawn-strategy.h \
+	$(gfc_src_dir)/gfc-spawn-strategy.c \
 	$(NULL)
 libgfc_la_CPPFLAGS=$(GFC_CFLAGS)
 libgfc_la_LIBADD=$(GFC_LIBS)
