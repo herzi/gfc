@@ -23,6 +23,15 @@ if test "x${gfc_has_gconf}" != "xyes"; then
 	PLATFORM_LIBS="-framework AppKit"
 	AC_SUBST(PLATFORM_CFLAGS)
 	AC_SUBST(PLATFORM_LIBS)
+else
+	GFC_CFLAGS="$GFC_CFLAGS $GCONF_CFLAGS"
+	GFC_LIBS="$GFC_LIBS $GCONF_LIBS"
+	AC_SUBST(GFC_CFLAGS)
+	AC_SUBST(GFC_LIBS)
+
+	OBJC='$(CC)'
+	AC_SUBST(OBJC)
+	AM_CONDITIONAL(am__fastdepOBJC,true)
 fi
 
 AC_OUTPUT(Makefile)
