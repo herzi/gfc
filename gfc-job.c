@@ -445,6 +445,18 @@ gfc_job_new (gchar const* working_folder,
 			     NULL);
 }
 
+GfcJob*
+gfc_job_new_full (gchar const     * working_folder,
+		  gchar const     **argv,
+		  GfcSpawnStrategy* spawn)
+{
+	return g_object_new (GFC_TYPE_JOB,
+			     "working-folder", working_folder,
+			     "argv",           argv,
+			     "spawn",          spawn,
+			     NULL);
+}
+
 void
 gfc_job_set_err_reader (GfcJob   * self,
 			GfcReader* reader)

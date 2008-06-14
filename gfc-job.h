@@ -41,17 +41,20 @@ typedef struct _GfcJobClass   GfcJobClass;
 #define GFC_JOB_GET_CLASS(c) (G_TYPE_INSTANCE_GET_CLASS ((i), GFC_TYPE_JOB, GfcJobClass))
 
 GType        gfc_job_get_type           (void);
-gchar**      gfc_job_get_argv           (GfcJob const* self);
-gchar const* gfc_job_get_command        (GfcJob const* self);
-GfcReader*   gfc_job_get_err_reader     (GfcJob const* self);
-gboolean     gfc_job_get_exited         (GfcJob const* self);
-GfcReader*   gfc_job_get_out_reader     (GfcJob const* self);
-GPid         gfc_job_get_pid            (GfcJob const* self);
-gint         gfc_job_get_return_code    (GfcJob const* self);
-gchar const* gfc_job_get_working_folder (GfcJob const* self);
-gboolean     gfc_job_kill               (GfcJob      * self);
-GfcJob*      gfc_job_new                (gchar const * working_folder,
-					 gchar const * command);
+gchar**      gfc_job_get_argv           (GfcJob const    * self);
+gchar const* gfc_job_get_command        (GfcJob const    * self);
+GfcReader*   gfc_job_get_err_reader     (GfcJob const    * self);
+gboolean     gfc_job_get_exited         (GfcJob const    * self);
+GfcReader*   gfc_job_get_out_reader     (GfcJob const    * self);
+GPid         gfc_job_get_pid            (GfcJob const    * self);
+gint         gfc_job_get_return_code    (GfcJob const    * self);
+gchar const* gfc_job_get_working_folder (GfcJob const    * self);
+gboolean     gfc_job_kill               (GfcJob          * self);
+GfcJob*      gfc_job_new                (gchar const     * working_folder,
+					 gchar const     * command);
+GfcJob*      gfc_job_new_full           (gchar const     * working_folder,
+					 gchar const     **argv,
+					 GfcSpawnStrategy* spawn);
 #ifndef FIXME_HIDE_PRIVATE_APIS
 void         gfc_job_set_err_reader     (GfcJob      * self,
 					 GfcReader   * reader);
