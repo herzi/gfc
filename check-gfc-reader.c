@@ -133,7 +133,7 @@ first_check (void)
 	/* cleanup */
 	g_string_free (string, TRUE);
 	g_main_loop_unref (loop);
-	close (test.fds[FD_READ]);
+	/* GfcReader calls this (FIXME: develop test case): close (test.fds[FD_READ]); */
 	close (test.fds[FD_WRITE]);
 	g_object_unref (reader);
 
