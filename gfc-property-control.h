@@ -41,6 +41,10 @@ typedef struct _GfcPropertyControlClass   GfcPropertyControlClass;
 
 GType gfc_property_control_get_type (void);
 
+enum GfcParamFlags {
+	GFC_PARAM_VISIBLE = 1 << G_PARAM_USER_SHIFT
+};
+
 struct _GfcPropertyControl {
 	/* FIXME: turn into a GtkWidget with get_label() or into an interface */
 	GObject                    base_instance;
