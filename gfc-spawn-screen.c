@@ -23,6 +23,10 @@
 
 #include "gfc-spawn-screen.h"
 
+struct _GfcSpawnScreenPrivate {
+	GdkScreen* screen;
+};
+
 enum {
 	PROP_0,
 	PROP_SCREEN
@@ -34,16 +38,55 @@ G_DEFINE_TYPE (GfcSpawnScreen, gfc_spawn_screen, GFC_TYPE_SPAWN_STRATEGY);
 
 static void
 gfc_spawn_screen_init (GfcSpawnScreen* self)
-{}
+{
+	self->_private = G_TYPE_INSTANCE_GET_PRIVATE (self,
+						      GFC_TYPE_SPAWN_SCREEN,
+						      GfcSpawnScreenPrivate);
+}
+
+static void
+spawn_screen_finalize (GObject* object)
+{
+	g_object_unref (GFC_SPAWN_SCREEN (object)->_private->screen);
+
+	G_OBJECT_CLASS (gfc_spawn_screen_parent_class)->finalize (object);
+}
+
+static void
+spawn_screen_set_property (GObject     * object,
+			   guint         prop_id,
+			   GValue const* value,
+			   GParamSpec  * pspec)
+{
+	GfcSpawnScreen* self = GFC_SPAWN_SCREEN (object);
+
+	switch (prop_id) {
+	case PROP_SCREEN:
+		g_return_if_fail (!self->_private->screen);
+		g_return_if_fail (g_value_get_object (value));
+
+		self->_private->screen = g_value_dup_object (value);
+		g_object_notify (object, "screen");
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
 
 static void
 gfc_spawn_screen_class_init (GfcSpawnScreenClass* self_class)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
 
+	object_class->finalize     = spawn_screen_finalize;
+	object_class->set_property = spawn_screen_set_property;
+
 	g_object_class_install_property (object_class, PROP_SCREEN,
 					 g_param_spec_object ("screen", "screen", "screen",
 							      GDK_TYPE_SCREEN, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_type_class_add_private (self_class, sizeof (GfcSpawnScreenPrivate));
 }
 
 /* Public API */
