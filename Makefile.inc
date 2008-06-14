@@ -16,6 +16,8 @@ libgfc_la_SOURCES=\
 	$(gfc_src_dir)/gfc-desktop.h \
 	$(gfc_src_dir)/gfc-job.c \
 	$(gfc_src_dir)/gfc-job.h \
+	$(gfc_src_dir)/gfc-property-control.c \
+	$(gfc_src_dir)/gfc-property-control.h \
 	$(gfc_src_dir)/gfc-reader.c \
 	$(gfc_src_dir)/gfc-reader.h \
 	$(gfc_src_dir)/gfc-spawn-screen.h \
