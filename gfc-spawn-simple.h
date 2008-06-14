@@ -33,6 +33,11 @@ typedef struct _GfcSpawnSimplePrivate GfcSpawnSimplePrivate;
 typedef struct _GfcSpawnSimpleClass   GfcSpawnSimpleClass;
 
 #define GFC_TYPE_SPAWN_SIMPLE         (gfc_spawn_simple_get_type ())
+#define GFC_SPAWN_SIMPLE(i)           (G_TYPE_CHECK_INSTANCE_CAST ((i), GFC_TYPE_SPAWN_SIMPLE, GfcSpawnSimple))
+#define GFC_SPAWN_SIMPLE_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), GFC_TYPE_SPAWN_SIMPLE, GfcSpawnSimpleClass))
+#define GFC_IS_SPAWN_SIMPLE(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), GFC_TYPE_SPAWN_SIMPLE))
+#define GFC_IS_SPAWN_SIMPLE_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), GFC_TYPE_SPAWN_SIMPLE))
+#define GFC_SPAWN_SIMPLE_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), GFC_TYPE_SPAWN_SIMPLE, GfcSpawnSimpleClass))
 
 GType             gfc_spawn_simple_get_type (void);
 GfcSpawnStrategy* gfc_spawn_simple_new      (void);

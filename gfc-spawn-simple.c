@@ -31,9 +31,40 @@ static void
 gfc_spawn_simple_init (GfcSpawnSimple* self)
 {}
 
+static gboolean
+simple_spawn (GfcSpawnStrategy* self,
+	      gchar const     * working_folder,
+	      gchar           **argv,
+	      gchar           **envv,
+	      GSpawnFlags       flags,
+	      GPid            * return_pid,
+	      gint            * return_stdin,
+	      gint            * return_stdout,
+	      gint            * return_stderr,
+	      GError          **return_error)
+{
+	g_return_val_if_fail (GFC_IS_SPAWN_SIMPLE (self), FALSE);
+
+	return g_spawn_async_with_pipes (working_folder,
+					 argv,
+					 envv,
+					 G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD,
+					 NULL, NULL,
+					 return_pid,
+					 return_stdin,
+					 return_stdout,
+					 return_stderr,
+					 return_error);
+
+}
+
 static void
 gfc_spawn_simple_class_init (GfcSpawnSimpleClass* self_class)
-{}
+{
+	GfcSpawnStrategyClass* spawn_class = GFC_SPAWN_STRATEGY_CLASS (self_class);
+
+	spawn_class->spawn = simple_spawn;
+}
 
 /* Public API */
 
