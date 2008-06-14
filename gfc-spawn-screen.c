@@ -23,6 +23,11 @@
 
 #include "gfc-spawn-screen.h"
 
+enum {
+	PROP_0,
+	PROP_SCREEN
+};
+
 /* GType Implementation */
 
 G_DEFINE_TYPE (GfcSpawnScreen, gfc_spawn_screen, GFC_TYPE_SPAWN_STRATEGY);
@@ -33,7 +38,13 @@ gfc_spawn_screen_init (GfcSpawnScreen* self)
 
 static void
 gfc_spawn_screen_class_init (GfcSpawnScreenClass* self_class)
-{}
+{
+	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
+
+	g_object_class_install_property (object_class, PROP_SCREEN,
+					 g_param_spec_object ("screen", "screen", "screen",
+							      GDK_TYPE_SCREEN, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+}
 
 /* Public API */
 
