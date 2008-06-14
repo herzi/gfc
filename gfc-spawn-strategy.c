@@ -35,3 +35,78 @@ static void
 gfc_spawn_strategy_class_init (GfcSpawnStrategyClass* self_class)
 {}
 
+/* Public API */
+
+static GQuark
+gfc_spawn_error_quark (void)
+{
+	static GQuark quark = 0;
+
+	/* FIXME: thread safety with g_once() */
+	if (G_UNLIKELY (!quark)) {
+		quark = g_quark_from_static_string ("GfcSpawn");
+	}
+
+	return quark;
+}
+
+/**
+ * gfc_spawn_strategy_spawn:
+ *
+ * Returns: %TRUE on success, %FALSE otherwise (then @error will definitely be
+ * set)
+ */
+gboolean
+gfc_spawn_strategy_spawn (GfcSpawnStrategy* self,
+			  gchar const     * working_folder,
+			  gchar           **argv,
+			  gchar           **envv,
+			  GSpawnFlags       flags,
+			  GPid            * return_pid,
+			  gint            * return_stdin,
+			  gint            * return_stdout,
+			  gint            * return_stderr,
+			  GError          **error)
+{
+	gboolean result = FALSE;
+
+	g_return_val_if_fail (GFC_IS_SPAWN_STRATEGY (self), FALSE);
+	g_return_val_if_fail (!error || !*error, FALSE);
+
+	if (G_UNLIKELY (!GFC_SPAWN_STRATEGY_GET_CLASS (self)->spawn)) {
+		GError* intern_error = g_error_new (gfc_spawn_error_quark (),
+						    0,
+						    "Class %s doesn't implement GfcSpawnStrategy->spawn\n",
+						    G_OBJECT_TYPE_NAME (self));
+
+		if (error) {
+			g_propagate_error (error, intern_error);
+		} else {
+			g_warning ("%s", intern_error->message);
+			g_error_free (intern_error);
+		}
+		return FALSE;
+	}
+
+	result = GFC_SPAWN_STRATEGY_GET_CLASS (self)->spawn (self,
+					       working_folder,
+					       argv, envv,
+					       flags,
+					       return_pid,
+					       return_stdin,
+					       return_stdout,
+					       return_stderr,
+					       error);
+
+	if (G_UNLIKELY (!result && error && !*error)) {
+		g_set_error (error,
+			     gfc_spawn_error_quark (),
+			     0,
+			     "%s\n",
+			     "Unknown error spawning child; the strategy returned "
+			     "FALSE and didn't set this error");
+	}
+
+	return result;
+}
+

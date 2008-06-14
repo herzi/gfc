@@ -28,12 +28,27 @@
 
 G_BEGIN_DECLS
 
-#define GFC_TYPE_SPAWN_STRATEGY        (gfc_spawn_strategy_get_type ())
+#define GFC_TYPE_SPAWN_STRATEGY         (gfc_spawn_strategy_get_type ())
+#define GFC_SPAWN_STRATEGY(i)           (G_TYPE_CHECK_INSTANCE_CAST ((i), GFC_TYPE_SPAWN_STRATEGY, GfcSpawnStrategy))
+#define GFC_SPAWN_STRATEGY_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), GFC_TYPE_SPAWN_STRATEGY, GfcSpawnStrategyClass))
+#define GFC_IS_SPAWN_STRATEGY(i)        (G_TYPE_CHECK_INSTANCE_TYPE ((i), GFC_TYPE_SPAWN_STRATEGY))
+#define GFC_IS_SPAWN_STRATEGY_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), GFC_TYPE_SPAWN_STRATEGY))
+#define GFC_SPAWN_STRATEGY_GET_CLASS(i) (G_TYPE_INSTANCE_GET_CLASS ((i), GFC_TYPE_SPAWN_STRATEGY, GfcSpawnStrategyClass))
 
 typedef struct _GfcSpawnStrategy      GfcSpawnStrategy;
 typedef struct _GfcSpawnStrategyClass GfcSpawnStrategyClass;
 
-GType gfc_spawn_strategy_get_type (void);
+GType    gfc_spawn_strategy_get_type (void);
+gboolean gfc_spawn_strategy_spawn    (GfcSpawnStrategy* self,
+				      gchar const     * working_folder,
+				      gchar           **argv,
+				      gchar           **envv,
+				      GSpawnFlags       flags,
+				      GPid            * return_pid,
+				      gint            * return_stdin,
+				      gint            * return_stdout,
+				      gint            * return_stderr,
+				      GError          **error);
 
 struct _GfcSpawnStrategy {
 	GObject      base_instance;
@@ -41,6 +56,18 @@ struct _GfcSpawnStrategy {
 
 struct _GfcSpawnStrategyClass {
 	GObjectClass base_class;
+
+	/* vtable */
+	gboolean (*spawn) (GfcSpawnStrategy* self,
+			   gchar const     * working_folder,
+			   gchar           **argv,
+			   gchar           **envv,
+			   GSpawnFlags       flags,
+			   GPid            * return_pid,
+			   gint            * return_stdin,
+			   gint            * return_stdout,
+			   gint            * return_stderr,
+			   GError          **error);
 };
 
 G_END_DECLS
