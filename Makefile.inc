@@ -23,7 +23,7 @@ libgfc_la_SOURCES=\
 	$(gfc_src_dir)/gfc-spawn-strategy.h \
 	$(gfc_src_dir)/gfc-spawn-strategy.c \
 	$(NULL)
-libgfc_la_CPPFLAGS=$(GFC_CFLAGS)
+libgfc_la_CPPFLAGS=$(GFC_CFLAGS) -I$(srcdir)/$(gfc_src_dir)
 libgfc_la_LIBADD=$(GFC_LIBS)
 
 if WITH_GNOME
