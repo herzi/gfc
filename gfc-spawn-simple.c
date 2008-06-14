@@ -1,7 +1,7 @@
-/* This file is part of ...
+/* This file is part of libgfc
  *
  * AUTHORS
- *     Sven Herzberg  <set the EMAIL_ADDRESS environment variable>
+ *     Sven Herzberg
  *
  * Copyright (C) 2008  Sven Herzberg
  *
@@ -22,4 +22,25 @@
  */
 
 #include "gfc-spawn-simple.h"
+
+/* GType Implementation */
+
+G_DEFINE_TYPE (GfcSpawnSimple, gfc_spawn_simple, GFC_TYPE_SPAWN_STRATEGY);
+
+static void
+gfc_spawn_simple_init (GfcSpawnSimple* self)
+{}
+
+static void
+gfc_spawn_simple_class_init (GfcSpawnSimpleClass* self_class)
+{}
+
+/* Public API */
+
+GfcSpawnStrategy*
+gfc_spawn_simple_new (void)
+{
+	return g_object_new (GFC_TYPE_SPAWN_SIMPLE,
+			     NULL);
+}
 

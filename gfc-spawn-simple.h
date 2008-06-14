@@ -1,7 +1,7 @@
-/* This file is part of ...
+/* This file is part of libgfc
  *
  * AUTHORS
- *     Sven Herzberg  <set the EMAIL_ADDRESS environment variable>
+ *     Sven Herzberg
  *
  * Copyright (C) 2008  Sven Herzberg
  *
@@ -24,5 +24,28 @@
 #ifndef GFC_SPAWN_SIMPLE_H
 #define GFC_SPAWN_SIMPLE_H
 
+#include <gfc-spawn-strategy.h>
+
+G_BEGIN_DECLS
+
+typedef struct _GfcSpawnSimple        GfcSpawnSimple;
+typedef struct _GfcSpawnSimplePrivate GfcSpawnSimplePrivate;
+typedef struct _GfcSpawnSimpleClass   GfcSpawnSimpleClass;
+
+#define GFC_TYPE_SPAWN_SIMPLE         (gfc_spawn_simple_get_type ())
+
+GType             gfc_spawn_simple_get_type (void);
+GfcSpawnStrategy* gfc_spawn_simple_new      (void);
+
+struct _GfcSpawnSimple {
+	GfcSpawnStrategy       base_instance;
+	GfcSpawnSimplePrivate* _private;
+};
+
+struct _GfcSpawnSimpleClass {
+	GfcSpawnStrategyClass  base_class;
+};
+
+G_END_DECLS
 
 #endif /* !GFC_SPAWN_SIMPLE_H */
