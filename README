@@ -6,6 +6,10 @@ it's usually used as a git-submodule for other projects. It contains:
 
  * GfcJob: a helpful class for executing commands and probably parsing their
    output
+ * GfcProperty*: helpers for automatically generated user interfaces for con-
+   figurating objects
  * GfcReader: a class built on top of GIOChannel which permits simple line-
    based parsing
+ * GfcSpawn*: helper classes for the GfcJob to be able to use different spawn
+   functions
 
