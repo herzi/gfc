@@ -18,6 +18,8 @@ libgfc_la_SOURCES=\
 	$(gfc_src_dir)/gfc-job.h \
 	$(gfc_src_dir)/gfc-reader.c \
 	$(gfc_src_dir)/gfc-reader.h \
+	$(gfc_src_dir)/gfc-spawn-screen.h \
+	$(gfc_src_dir)/gfc-spawn-screen.c \
 	$(gfc_src_dir)/gfc-spawn-simple.h \
 	$(gfc_src_dir)/gfc-spawn-simple.c \
 	$(gfc_src_dir)/gfc-spawn-strategy.h \
