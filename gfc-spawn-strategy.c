@@ -1,7 +1,7 @@
-/* This file is part of ...
+/* This file is part of libgfc
  *
  * AUTHORS
- *     Sven Herzberg  <set the EMAIL_ADDRESS environment variable>
+ *     Sven Herzberg
  *
  * Copyright (C) 2008  Sven Herzberg
  *
@@ -22,4 +22,16 @@
  */
 
 #include "gfc-spawn-strategy.h"
+
+/* GType Implementation */
+
+G_DEFINE_ABSTRACT_TYPE (GfcSpawnStrategy, gfc_spawn_strategy, G_TYPE_OBJECT);
+
+static void
+gfc_spawn_strategy_init (GfcSpawnStrategy* self)
+{}
+
+static void
+gfc_spawn_strategy_class_init (GfcSpawnStrategyClass* self_class)
+{}
 
