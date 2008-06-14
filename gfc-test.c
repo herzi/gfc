@@ -24,6 +24,7 @@
 #include "gfc-test.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 static gboolean   initialized = FALSE;
@@ -49,17 +50,26 @@ void
 gfc_test_init (gint*   argc,
 	       gchar***argv)
 {
+	GOptionContext* context;
 	gchar const* prgname;
 
 	if (G_UNLIKELY (initialized)) {
 		return;
 	}
 
+	/* set the process name before we can error out in the options */
 	prgname = (*argv)[0];
 	if (g_str_has_prefix (prgname, "./")) {
 		prgname += strlen ("./");
 	}
 	g_set_prgname (prgname);
+
+	context = g_option_context_new ("");
+	g_option_context_set_ignore_unknown_options (context, FALSE);
+	if (!g_option_context_parse (context, argc, argv, NULL)) { // FIXME: add error
+		exit (1);
+	}
+	g_option_context_free (context);
 
 	print_func = g_set_print_handler (gfc_test_print);
 }
