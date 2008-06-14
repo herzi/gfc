@@ -143,49 +143,46 @@ job_constructed (GObject* object)
 		goto finish;
 	}
 
+	/* FIXME: should goto finish; */
 	g_return_if_fail (self->_private->spawn);
 
-	/* FIXME: use a GfcSpawnStrategy (GfcSpawnSimple by default) to
-	 * determine the spawn function; GfcSpawnGdk will do the job for the
-	 * integrated widget behavior */
-	success = g_spawn_async_with_pipes (gfc_job_get_working_folder (GFC_JOB (self)),
-					    gfc_job_get_argv (GFC_JOB (self)),
-						  NULL,
-						  G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD,
-						  NULL, NULL,
+	success = gfc_spawn_strategy_spawn (self->_private->spawn,
+					    gfc_job_get_working_folder (self),
+					    gfc_job_get_argv (self),
+					    NULL,
+					    G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD,
 					    &pid,
-						  NULL, // in
-						  &out, // has to be set for some reason (otherwise stderr from gcc gets printed in stdout from make *?*)
-						  &err,
-						  &error);
+					    NULL, /* in */
+					    &out,
+					    &err,
+					    &error);
 
-	if (!success) {
+	if (!success || error) {
 		g_warning ("Error executing command \"%s\" in \"%s\": %s",
-			   gfc_job_get_command (GFC_JOB (self)),
-			   gfc_job_get_working_folder (GFC_JOB (self)),
+			   gfc_job_get_command (self),
+			   gfc_job_get_working_folder (self),
 			   error->message);
 		g_error_free (error);
 		// FIXME: set up an idle handler that invokes "canceled"
 	} else {
 		gfc_job_set_out_reader (GFC_JOB (self),
 					gfc_reader_new (out));
-		g_object_unref (gfc_job_get_out_reader (GFC_JOB (self)));
+		g_object_unref (gfc_job_get_out_reader (self));
 		gfc_job_set_err_reader (GFC_JOB (self),
 					gfc_reader_new (err));
-		g_object_unref (gfc_job_get_err_reader (GFC_JOB (self)));
-		gfc_job_set_pid (GFC_JOB (self),
-				 pid);
+		g_object_unref (gfc_job_get_err_reader (self));
+		gfc_job_set_pid (self, pid);
 		self->_private->child_watch_tag = g_child_watch_add (pid,
 								     job_child_watch_cb,
 								     self);
 	}
 
-	g_object_unref (self->_private->spawn);
-	self->_private->spawn = NULL;
-
 	self->_private->state = GFC_JOB_EXECUTE;
 
 finish:
+	g_object_unref (self->_private->spawn);
+	self->_private->spawn = NULL;
+
 	if (G_OBJECT_CLASS (gfc_job_parent_class)->constructed) {
 		G_OBJECT_CLASS (gfc_job_parent_class)->constructed (object);
 	}
