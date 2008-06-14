@@ -27,6 +27,8 @@
 #include <signal.h>
 #include <sys/wait.h>
 
+#include <gfc-spawn-simple.h>
+
 typedef enum {
 	GFC_JOB_SETUP,
 	GFC_JOB_EXECUTE,
@@ -40,27 +42,31 @@ typedef enum {
 
 struct _GfcJobPrivate {
 	/* state indicating the object's state */
-	GfcJobState  state;
+	GfcJobState       state;
 
 	/* data for GFC_JOB_SETUP (also valid later) */
-	gchar      * working_folder;
-	gchar      **argv;
+	gchar           * working_folder;
+	gchar           **argv;
+
+	/* data for GFC_JOB_SETUP only */
+	GfcSpawnStrategy* spawn;
 
 	/* data for GFC_JOB_EXECUTE */
-	GfcReader  * err_reader;
-	GfcReader  * out_reader;
-	GPid         pid;
-	guint        child_watch_tag;
+	GfcReader       * err_reader;
+	GfcReader       * out_reader;
+	GPid              pid;
+	guint             child_watch_tag;
 
 	/* data for GFC_JOB_DONE */
-	gint         return_code;
-	guint        exited : 1;
+	gint              return_code;
+	guint             exited : 1;
 };
 
 enum {
 	PROP_0,
 	PROP_ARGV,
 	PROP_COMMAND,
+	PROP_SPAWN,
 	PROP_WORKING_FOLDER
 };
 
@@ -137,6 +143,8 @@ job_constructed (GObject* object)
 		goto finish;
 	}
 
+	g_return_if_fail (self->_private->spawn);
+
 	/* FIXME: use a GfcSpawnStrategy (GfcSpawnSimple by default) to
 	 * determine the spawn function; GfcSpawnGdk will do the job for the
 	 * integrated widget behavior */
@@ -171,6 +179,9 @@ job_constructed (GObject* object)
 								     job_child_watch_cb,
 								     self);
 	}
+
+	g_object_unref (self->_private->spawn);
+	self->_private->spawn = NULL;
 
 	self->_private->state = GFC_JOB_EXECUTE;
 
@@ -281,6 +292,16 @@ job_set_property (GObject     * object,
 			g_clear_error (&error);
 		}
 		break;
+	case PROP_SPAWN:
+		g_return_if_fail (!self->_private->spawn);
+
+		if (!g_value_get_object (value)) {
+			self->_private->spawn = gfc_spawn_simple_new ();
+		} else {
+			self->_private->spawn = g_value_dup_object (value);
+		}
+		g_object_notify (object, "spawn");
+		break;
 	case PROP_WORKING_FOLDER:
 		g_return_if_fail (self->_private->state == GFC_JOB_SETUP);
 		g_return_if_fail (!self->_private->working_folder);
@@ -310,6 +331,10 @@ gfc_job_class_init (GfcJobClass* self_class)
 	g_object_class_install_property (object_class, PROP_COMMAND,
 					 g_param_spec_string ("command", NULL, NULL,
 							      NULL, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class, PROP_SPAWN,
+					 g_param_spec_object ("spawn", "spawn", "spawn",
+							      GFC_TYPE_SPAWN_STRATEGY,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class, PROP_WORKING_FOLDER,
 					 g_param_spec_string ("working-folder", "working-folder", "working-folder",
 							      NULL, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
