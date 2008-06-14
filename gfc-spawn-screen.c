@@ -74,10 +74,35 @@ spawn_screen_set_property (GObject     * object,
 	}
 }
 
+static gboolean
+spawn_screen_spawn (GfcSpawnStrategy* self,
+		    gchar const     * working_folder,
+		    gchar           **argv,
+		    gchar           **envv,
+		    GSpawnFlags       flags,
+		    GPid            * return_pid,
+		    gint            * return_stdin,
+		    gint            * return_stdout,
+		    gint            * return_stderr,
+		    GError          **return_error)
+{
+	return gdk_spawn_on_screen_with_pipes (GFC_SPAWN_SCREEN (self)->_private->screen,
+					       working_folder,
+					       argv, envv,
+					       flags,
+					       NULL, NULL,
+					       return_pid,
+					       return_stdin,
+					       return_stdout,
+					       return_stderr,
+					       return_error);
+}
+
 static void
 gfc_spawn_screen_class_init (GfcSpawnScreenClass* self_class)
 {
-	GObjectClass* object_class = G_OBJECT_CLASS (self_class);
+	GObjectClass         * object_class = G_OBJECT_CLASS (self_class);
+	GfcSpawnStrategyClass* spawn_class  = GFC_SPAWN_STRATEGY_CLASS (self_class);
 
 	object_class->finalize     = spawn_screen_finalize;
 	object_class->set_property = spawn_screen_set_property;
@@ -85,6 +110,8 @@ gfc_spawn_screen_class_init (GfcSpawnScreenClass* self_class)
 	g_object_class_install_property (object_class, PROP_SCREEN,
 					 g_param_spec_object ("screen", "screen", "screen",
 							      GDK_TYPE_SCREEN, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+
+	spawn_class->spawn = spawn_screen_spawn;
 
 	g_type_class_add_private (self_class, sizeof (GfcSpawnScreenPrivate));
 }
