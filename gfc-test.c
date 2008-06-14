@@ -51,6 +51,12 @@ gfc_test_init (gint*   argc,
 	       gchar***argv)
 {
 	GOptionContext* context;
+	gboolean fatal_warnings = FALSE;
+	GError* error = NULL;
+	GOptionEntry    entries[] = {
+		{"g-fatal-warnings", 0, 0, G_OPTION_ARG_NONE, &fatal_warnings, "fatal warnings", NULL},
+		{NULL}
+	};
 	gchar const* prgname;
 
 	if (G_UNLIKELY (initialized)) {
@@ -66,10 +72,18 @@ gfc_test_init (gint*   argc,
 
 	context = g_option_context_new ("");
 	g_option_context_set_ignore_unknown_options (context, FALSE);
-	if (!g_option_context_parse (context, argc, argv, NULL)) { // FIXME: add error
+	g_option_context_add_main_entries (context, entries, NULL);
+	if (!g_option_context_parse (context, argc, argv, &error)) { // FIXME: add error
+		g_printerr ("%s\n", error ? error->message : "");
 		exit (1);
 	}
 	g_option_context_free (context);
+
+	if (fatal_warnings) {
+		GLogLevelFlags flags = g_log_set_always_fatal(G_LOG_FATAL_MASK);
+		flags |= G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL;
+		g_log_set_always_fatal(flags);
+	}
 
 	print_func = g_set_print_handler (gfc_test_print);
 }
