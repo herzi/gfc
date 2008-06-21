@@ -13,6 +13,16 @@ check_LTLIBRARIES+=libgfc-test.la
 TESTS+=$(gfc_tests)
 
 libgfc_la_SOURCES=\
+	$(gfc_src_dir)/ct-control.c \
+	$(gfc_src_dir)/ct-control.h \
+	$(gfc_src_dir)/ct-control-bool.c \
+	$(gfc_src_dir)/ct-control-bool.h \
+	$(gfc_src_dir)/ct-control-color.c \
+	$(gfc_src_dir)/ct-control-color.h \
+	$(gfc_src_dir)/ct-control-double.c \
+	$(gfc_src_dir)/ct-control-double.h \
+	$(gfc_src_dir)/ct-control-string.c \
+	$(gfc_src_dir)/ct-control-string.h \
 	$(gfc_src_dir)/gfc-desktop.h \
 	$(gfc_src_dir)/gfc-job.c \
 	$(gfc_src_dir)/gfc-job.h \
