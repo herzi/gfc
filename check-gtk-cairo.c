@@ -84,6 +84,17 @@ main (int   argc,
 	}
 	cairo_surface_destroy (surface);
 
+#ifdef CAIRO_HAS_QUARTZ_SURFACE
+	surface = cairo_quartz_surface_create (CAIRO_FORMAT_RGB24, 100, 80);
+	cr = cairo_create (surface);
+	test (cr);
+	cairo_destroy (cr);
+	if (CAIRO_STATUS_SUCCESS != cairo_surface_write_to_png (surface, "quartzsurface.png")) {
+		g_error ("Eeek! Couldn't save the file \"quartzsurface.png\"");
+	}
+	cairo_surface_destroy (surface);
+#endif
+
 	/* compare the images */
 	pbuf_platform = gdk_pixbuf_new_from_file ("platform.png", &error);
 	if (!pbuf_platform || error) {
