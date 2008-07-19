@@ -35,6 +35,7 @@ test (cairo_t* cr)
 
 	cairo_move_to (cr, 10.0, 20.0);
 	cairo_line_to (cr, 10.0, 30.0);
+	cairo_stroke (cr);
 }
 
 int
