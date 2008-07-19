@@ -36,6 +36,10 @@ test (cairo_t* cr)
 	cairo_move_to (cr, 10.0, 20.0);
 	cairo_line_to (cr, 10.0, 30.0);
 	cairo_stroke (cr);
+
+	cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.5);
+	cairo_arc (cr, 0.0, 0.0, 10.0, 0.0, G_PI/2);
+	cairo_stroke (cr);
 }
 
 int
