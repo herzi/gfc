@@ -69,4 +69,7 @@ check_gfc_main_loop_LDADD=\
 check_gtk_cairo_SOURCES=\
 	$(gfc_src_dir)/check-gtk-cairo.c \
 	$(NULL)
-
+check_gtk_cairo_CPPFLAGS=$(GFC_CFLAGS) -I$(srcdir)/$(gfc_src_dir)
+check_gtk_cairo_LDADD=\
+	$(GFC_LIBS) \
+	$(NULL)

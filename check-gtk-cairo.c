@@ -23,10 +23,102 @@
  * if advised of the possibility of such damage.
  */
 
+#include <gdk/gdk.h>
+
+static void
+test (cairo_t* cr)
+{
+	cairo_save (cr);
+	 cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+	 cairo_paint (cr);
+	cairo_restore (cr);
+
+	cairo_move_to (cr, 10.0, 20.0);
+	cairo_line_to (cr, 10.0, 30.0);
+}
+
 int
 main (int   argc,
       char**argv)
 {
+	GdkPixmap* pixmap;
+	GdkPixbuf* pixbuf;
+	GdkPixbuf* pbuf_platform;
+	GdkPixbuf* pbuf_imagesrf;
+	GError   * error = NULL;
+	cairo_surface_t* surface;
+	cairo_t* cr;
+	guchar* data_platform;
+	guchar* data_imagesrf;
+	guint i;
+
+	gdk_init (&argc, &argv);
+
+	/* create "platform.png" via GdkPixmap */
+	pixmap = gdk_pixmap_new (NULL /* drawable */, 100 /* w */, 80 /* h */, 24 /* d */);
+	cr = gdk_cairo_create (pixmap);
+	test (cr);
+	cairo_destroy (cr);
+
+	pixbuf = gdk_pixbuf_get_from_drawable (NULL,
+					       pixmap,
+					       gdk_rgb_get_colormap (),
+					       0, 0,
+					       0, 0,
+					       100, 80);
+	if (!gdk_pixbuf_save (pixbuf, "platform.png", "png", NULL, NULL)) {
+		g_error ("Eeek! Couldn't save the file \"platform.png\"");
+	}
+	g_object_unref (pixbuf);
+
+	g_object_unref (pixmap);
+
+	/* create "imagesurface.png" via pure cairo */
+	surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 100, 80);
+	cr = cairo_create (surface);
+	test (cr);
+	cairo_destroy (cr);
+	if (CAIRO_STATUS_SUCCESS != cairo_surface_write_to_png (surface, "imagesurface.png")) {
+		g_error ("Eeek! Couldn't save the file \"imagesurface.png\"");
+	}
+	cairo_surface_destroy (surface);
+
+	/* compare the images */
+	pbuf_platform = gdk_pixbuf_new_from_file ("platform.png", &error);
+	if (!pbuf_platform || error) {
+		g_error ("Eeek! Error loading \"platform.png\"");
+	}
+	pbuf_imagesrf = gdk_pixbuf_new_from_file ("imagesurface.png", &error);
+	if (!pbuf_imagesrf || error) {
+		g_object_unref (pbuf_platform);
+		g_error ("Eeek! Error loading \"imagesurface.png\"");
+	}
+
+	g_return_val_if_fail (gdk_pixbuf_get_width (pbuf_platform) ==
+			      gdk_pixbuf_get_width (pbuf_imagesrf),
+			      1);
+	g_return_val_if_fail (gdk_pixbuf_get_height (pbuf_platform) ==
+			      gdk_pixbuf_get_height (pbuf_imagesrf),
+			      1);
+	g_return_val_if_fail (gdk_pixbuf_get_rowstride (pbuf_platform) ==
+			      gdk_pixbuf_get_rowstride (pbuf_imagesrf),
+			      1);
+	g_return_val_if_fail (gdk_pixbuf_get_n_channels (pbuf_platform) ==
+			      gdk_pixbuf_get_n_channels (pbuf_imagesrf),
+			      1);
+
+	data_platform = gdk_pixbuf_get_pixels (pbuf_platform);
+	data_imagesrf = gdk_pixbuf_get_pixels (pbuf_imagesrf);
+
+	for (i = 0; i < gdk_pixbuf_get_height (pbuf_platform) * gdk_pixbuf_get_rowstride (pbuf_platform); i++) {
+		if (data_platform[i] != data_imagesrf[i]) {
+			g_error ("Eeek! Images are differing at byte %d", i);
+		}
+	}
+
+	g_object_unref (pbuf_platform);
+	g_object_unref (pbuf_imagesrf);
+
 	return 0;
 }
 
