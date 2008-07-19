@@ -128,7 +128,10 @@ main (int   argc,
 
 	for (i = 0; i < gdk_pixbuf_get_height (pbuf_platform) * gdk_pixbuf_get_rowstride (pbuf_platform); i++) {
 		if (data_platform[i] != data_imagesrf[i]) {
-			g_error ("Eeek! Images are differing at byte %d", i);
+			g_warning ("Eeek! Images are differing at byte %d", i);
+			g_object_unref (pbuf_platform);
+			g_object_unref (pbuf_imagesrf);
+			return 1;
 		}
 	}
 
