@@ -6,6 +6,7 @@ noinst_LTLIBRARIES+=\
 gfc_tests=\
 	check-gfc-main-loop \
 	check-gfc-reader \
+	check-gtk-cairo \
 	$(NULL)
 
 check_PROGRAMS+=$(gfc_tests)
@@ -43,7 +44,7 @@ libgfc_test_la_SOURCES=\
 	$(gfc_src_dir)/gfc-test-main.c \
 	$(gfc_src_dir)/gfc-test-main.h \
 	$(NULL)
-libgfc_test_la_CPPFLAGS=$(GFC_CFLAGS)
+libgfc_test_la_CPPFLAGS=$(GFC_CFLAGS) -I$(srcdir)/$(gfc_src_dir)
 libgfc_test_la_LIBADD=$(GFC_LIBS)
 
 check_gfc_reader_SOURCES=\
@@ -63,5 +64,9 @@ check_gfc_main_loop_CPPFLAGS=$(GFC_CFLAGS) -I$(srcdir)/$(gfc_src_dir)
 check_gfc_main_loop_LDADD=\
 	libgfc-test.la \
 	$(GFC_LIBS) \
+	$(NULL)
+
+check_gtk_cairo_SOURCES=\
+	$(gfc_src_dir)/check-gtk-cairo.c \
 	$(NULL)
 
