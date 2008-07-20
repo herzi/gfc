@@ -104,7 +104,11 @@ main (int   argc,
 	if (!pbuf_platform || error) {
 		g_error ("Eeek! Error loading \"platform.png\"");
 	}
+#ifdef CAIRO_HAS_QUARTZ_SURFACE
+	pbuf_imagesrf = gdk_pixbuf_new_from_file ("quartzsurface.png", &error);
+#else
 	pbuf_imagesrf = gdk_pixbuf_new_from_file ("imagesurface.png", &error);
+#endif
 	if (!pbuf_imagesrf || error) {
 		g_object_unref (pbuf_platform);
 		g_error ("Eeek! Error loading \"imagesurface.png\"");
