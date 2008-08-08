@@ -1,6 +1,9 @@
 AC_INIT(autotool,0.0.1,mailto:herzi@gnome-de.org)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
+MILESTONE=0.2
+AC_SUBST(MILESTONE)
+
 CXX=no
 F77=no
 
@@ -35,4 +38,5 @@ else
 	AM_CONDITIONAL(am__fastdepOBJC,true)
 fi
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT([Makefile
+	   gfc.pc])

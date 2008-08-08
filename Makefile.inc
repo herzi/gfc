@@ -1,8 +1,5 @@
 # vim:ft=automake:
 
-noinst_LTLIBRARIES+=\
-	libgfc.la \
-	$(NULL)
 gfc_tests=\
 	check-gfc-main-loop \
 	check-gfc-reader \
@@ -28,6 +25,7 @@ libgfc_la_SOURCES=\
 	$(NULL)
 libgfc_la_CPPFLAGS=$(GFC_CFLAGS) -I$(srcdir)/$(gfc_src_dir)
 libgfc_la_LIBADD=$(GFC_LIBS)
+libgfc_la_LDFLAGS=-release $(MILESTONE)
 
 if WITH_GNOME
 libgfc_la_SOURCES+=$(gfc_src_dir)/gfc-desktop-gnome.c

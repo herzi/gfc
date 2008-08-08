@@ -10,6 +10,16 @@ check_LTLIBRARIES=
 noinst_LTLIBRARIES=
 TESTS=
 
+lib_LTLIBRARIES=libgfc.la
+
+pkgconfigdir=$(libdir)/pkg-config
+pkgconfig_DATA=gfc-@MILESTONE@.pc
+
+CLEANFILES=$(pkgconfig_DATA)
+
+gfc-@MILESTONE@.pc: gfc.pc Makefile
+	cmp -s $< $@ || cp $< $@
+
 AM_CPPFLAGS=$(GFC_CFLAGS)
 LDADD=$(GFC_LIBS)
 
