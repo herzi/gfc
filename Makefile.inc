@@ -9,18 +9,26 @@ check_PROGRAMS+=$(gfc_tests)
 check_LTLIBRARIES+=libgfc-test.la
 TESTS+=$(gfc_tests)
 
-libgfc_la_SOURCES=\
+libgfc_la_HEADERS=\
 	$(gfc_src_dir)/gfc-desktop.h \
-	$(gfc_src_dir)/gfc-job.c \
+	gfc/gtk-window.h \
 	$(gfc_src_dir)/gfc-job.h \
-	$(gfc_src_dir)/gfc-reader.c \
 	$(gfc_src_dir)/gfc-reader.h \
 	$(gfc_src_dir)/gfc-spawn-screen.h \
-	$(gfc_src_dir)/gfc-spawn-screen.c \
 	$(gfc_src_dir)/gfc-spawn-simple.h \
-	$(gfc_src_dir)/gfc-spawn-simple.c \
 	$(gfc_src_dir)/gfc-spawn-strategy.h \
+	gfc/window.h \
+	$(NULL)
+
+libgfc_la_SOURCES=\
+	$(libgfc_la_HEADERS) \
+	gfc/gtk-window.c \
+	$(gfc_src_dir)/gfc-job.c \
+	$(gfc_src_dir)/gfc-reader.c \
+	$(gfc_src_dir)/gfc-spawn-screen.c \
+	$(gfc_src_dir)/gfc-spawn-simple.c \
 	$(gfc_src_dir)/gfc-spawn-strategy.c \
+	gfc/window.c \
 	$(NULL)
 libgfc_la_CPPFLAGS=$(GFC_CFLAGS) -I$(srcdir)/$(gfc_src_dir)
 libgfc_la_LIBADD=$(GFC_LIBS)

@@ -1,5 +1,7 @@
-AC_INIT(autotool,0.0.1,mailto:herzi@gnome-de.org)
+AC_INIT(gfc,0.0.2,mailto:herzi@gnome-de.org)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 MILESTONE=0.2
 AC_SUBST(MILESTONE)
@@ -13,7 +15,7 @@ AC_PROG_LIBTOOL
 HERZI_PROG_VALGRIND
 
 dnl FIXME: split gdk stuff into libgfc-ui
-PKG_CHECK_MODULES(GFC,[glib-2.0 gobject-2.0 gdk-2.0])
+PKG_CHECK_MODULES(GFC,[glib-2.0 gobject-2.0 gtk+-2.0])
 
 gfc_has_gconf=
 PKG_CHECK_MODULES(GCONF,[gconf-2.0],[gfc_has_gconf=yes],[gfc_has_gconf=no])

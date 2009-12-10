@@ -8,14 +8,33 @@
 check_PROGRAMS=
 check_LTLIBRARIES=
 noinst_LTLIBRARIES=
+noinst_PROGRAMS=gfc-demo
 TESTS=
 
 lib_LTLIBRARIES=libgfc.la
 
-pkgconfigdir=$(libdir)/pkg-config
+pkgconfigdir=$(libdir)/pkgconfig
 pkgconfig_DATA=gfc-@MILESTONE@.pc
 
+gfc_HEADERS=\
+	gfc/gfc.h \
+	$(NULL)
+gfcdir=$(includedir)/gfc-@MILESTONE@
+
+gfc_demo_SOURCES=\
+	demo/main.c \
+	$(NULL)
+gfc_demo_CPPFLAGS=\
+	-I$(top_srcdir)/gfc \
+	$(libgfc_la_CPPFLAGS) \
+	$(NULL)
+gfc_demo_LDADD=\
+	libgfc.la \
+	$(NULL)
+
 CLEANFILES=$(pkgconfig_DATA)
+
+libgfc_ladir=$(gfcdir)/gfc
 
 gfc-@MILESTONE@.pc: gfc.pc Makefile
 	cmp -s $< $@ || cp $< $@
@@ -29,3 +48,5 @@ endif
 
 gfc_src_dir=.
 include Makefile.inc
+
+EXTRA_DIST=glib-2.0.supp
