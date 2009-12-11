@@ -13,6 +13,9 @@ TESTS=
 
 lib_LTLIBRARIES=libgfc.la
 
+gfc_src_dir=.
+include Makefile.inc
+
 pkgconfigdir=$(libdir)/pkgconfig
 pkgconfig_DATA=gfc-@MILESTONE@.pc
 
@@ -20,6 +23,13 @@ gfc_HEADERS=\
 	gfc.h \
 	$(NULL)
 gfcdir=$(includedir)/gfc-@MILESTONE@
+
+libgfc_la_HEADERS+=\
+	gfc/gdk-window.h \
+	$(NULL)
+libgfc_la_SOURCES+=\
+	gfc/gdk-window.c \
+	$(NULL)
 
 gfc_demo_SOURCES=\
 	demo/main.c \
@@ -45,8 +55,5 @@ LDADD=$(GFC_LIBS)
 if WITH_VALGRIND
 TESTS_ENVIRONMENT=G_SLICE=always-malloc G_DEBUG=gc-friendly $(top_builddir)/libtool --mode=execute valgrind --leak-check=full -q --suppressions=$(srcdir)/glib-2.0.supp
 endif
-
-gfc_src_dir=.
-include Makefile.inc
 
 EXTRA_DIST=glib-2.0.supp
