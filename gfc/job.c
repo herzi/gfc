@@ -21,13 +21,16 @@
  * USA
  */
 
-#include "gfc-job.h"
+#include "gfc/job.h"
 
 #include <errno.h>
 #include <signal.h>
 #include <sys/wait.h>
 
 #include <gfc-spawn-simple.h>
+
+#define GETTEXT_PACKAGE NULL /* FIXME: this should be in the build system */
+#include <glib/gi18n-lib.h>
 
 typedef enum {
 	GFC_JOB_SETUP,
@@ -60,7 +63,10 @@ struct _GfcJobPrivate {
 	/* data for GFC_JOB_DONE */
 	gint              return_code;
 	guint             exited : 1;
+        GError          * error;
 };
+
+#define PRIV(i) (((GfcJob*)(i))->_private)
 
 enum {
 	PROP_0,
@@ -75,6 +81,9 @@ enum {
 	N_SIGNALS
 };
 
+static void gfc_job_set_err_reader (GfcJob   * self,
+                                    GfcReader* reader);
+
 static guint gfc_job_signals[N_SIGNALS] = {0};
 
 G_DEFINE_TYPE (GfcJob, gfc_job, G_TYPE_OBJECT);
@@ -82,30 +91,29 @@ G_DEFINE_TYPE (GfcJob, gfc_job, G_TYPE_OBJECT);
 static void
 gfc_job_init (GfcJob* self)
 {
-	self->_private = G_TYPE_INSTANCE_GET_PRIVATE (self,
-						      GFC_TYPE_JOB,
-						      GfcJobPrivate);
-	self->_private->state = GFC_JOB_SETUP;
+  PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, GFC_TYPE_JOB, GfcJobPrivate);
+  PRIV (self)->state = GFC_JOB_SETUP;
+  PRIV (self)->return_code = -1;
+  PRIV (self)->exited = FALSE;
 }
 
 static void
 job_set_status (GfcJob  * self,
-		gint      return_code,
-		gboolean  exited)
+                gint      return_code,
+                gboolean  exited)
 {
-	gfc_job_set_return_code (GFC_JOB (self), return_code);
-	gfc_job_set_exited      (GFC_JOB (self), exited);
+  gfc_job_set_return_code (GFC_JOB (self), return_code);
+  gfc_job_set_exited      (GFC_JOB (self), exited);
 
-	/* usually the application code will unref() the job in the done signal handler */
-	g_object_ref (self);
+  /* usually the application code will unref() the job in the done signal handler */
+  g_object_ref (self);
 
-	// FIXME: emit the signal by id once the emission is moved into the GfcJob
-	g_signal_emit_by_name (self, "done");
+  g_signal_emit (self, gfc_job_signals[DONE], 0);
 
-	gfc_job_set_out_reader (GFC_JOB (self), NULL);
-	gfc_job_set_err_reader (GFC_JOB (self), NULL);
+  gfc_job_set_out_reader (GFC_JOB (self), NULL);
+  gfc_job_set_err_reader (GFC_JOB (self), NULL);
 
-	g_object_unref (self);
+  g_object_unref (self);
 }
 
 static void
@@ -124,6 +132,16 @@ job_child_watch_cb (GPid     pid,
 			WIFEXITED (status));
 }
 
+static gboolean
+emit_done_signal (gpointer user_data)
+{
+  g_return_val_if_fail (GFC_IS_JOB (user_data), FALSE);
+
+  g_signal_emit (user_data, gfc_job_signals[DONE], 0);
+
+  return FALSE; /* run once */
+}
+
 static void
 job_constructed (GObject* object)
 {
@@ -136,11 +154,12 @@ job_constructed (GObject* object)
 	GPid      pid     = 0;
 
 	if (G_UNLIKELY (!gfc_job_get_argv (GFC_JOB (self)))) {
-		g_warning ("no command or argument vector has been set");
+                g_set_error (&PRIV (self)->error, G_SPAWN_ERROR, G_SPAWN_ERROR_FAILED,
+                             _("no command or argument vector has been set"));
 
 		self->_private->state = GFC_JOB_DONE;
 
-		goto finish;
+		goto error;
 	}
 
 	/* FIXME: should goto finish; */
@@ -158,12 +177,12 @@ job_constructed (GObject* object)
 					    &error);
 
 	if (!success || error) {
-		g_warning ("Error executing command \"%s\" in \"%s\": %s",
-			   gfc_job_get_command (self),
-			   gfc_job_get_working_folder (self),
-			   error->message);
-		g_error_free (error);
-		// FIXME: set up an idle handler that invokes "canceled"
+                g_propagate_error (&PRIV (self)->error, error);
+
+                /* FIXME: maybe add GFC_JOB_ERROR */
+                PRIV (self)->state = GFC_JOB_DONE;
+
+                goto error;
 	} else {
 		gfc_job_set_out_reader (GFC_JOB (self),
 					gfc_reader_new (out));
@@ -175,9 +194,15 @@ job_constructed (GObject* object)
 		self->_private->child_watch_tag = g_child_watch_add (pid,
 								     job_child_watch_cb,
 								     self);
+
+                self->_private->state = GFC_JOB_EXECUTE;
 	}
 
-	self->_private->state = GFC_JOB_EXECUTE;
+        goto finish;
+error:
+        /* emit done in an idle handler - to give the application
+         * developer some time to connect to the done signal */
+        g_idle_add (emit_done_signal, self);
 
 finish:
 	g_object_unref (self->_private->spawn);
@@ -358,19 +383,27 @@ gfc_job_get_argv (GfcJob const* self)
 gchar const*
 gfc_job_get_command (GfcJob const* self)
 {
-	g_return_val_if_fail (GFC_IS_JOB (self), NULL);
+  g_return_val_if_fail (GFC_IS_JOB (self), NULL);
 
-	return self->_private->argv ?
-	       self->_private->argv[0] :
-	       NULL;
+  return self->_private->argv ?
+    self->_private->argv[0] :
+    NULL;
+}
+
+GError const*
+gfc_job_get_error (GfcJob const* self)
+{
+  g_return_val_if_fail (GFC_IS_JOB (self), NULL);
+
+  return PRIV (self)->error;
 }
 
 GfcReader*
 gfc_job_get_err_reader (GfcJob const* self)
 {
-	g_return_val_if_fail (GFC_IS_JOB (self), NULL);
+  g_return_val_if_fail (GFC_IS_JOB (self), NULL);
 
-	return self->_private->err_reader;
+  return self->_private->err_reader;
 }
 
 gboolean
@@ -401,10 +434,10 @@ gfc_job_get_pid (GfcJob const* self)
 gint
 gfc_job_get_return_code (GfcJob const* self)
 {
-	g_return_val_if_fail (GFC_IS_JOB (self), -1);
-	g_return_val_if_fail (self->_private->state == GFC_JOB_DONE, -1);
+  g_return_val_if_fail (GFC_IS_JOB (self), -1);
+  g_return_val_if_fail (PRIV (self)->state == GFC_JOB_DONE, -1);
 
-	return self->_private->return_code;
+  return PRIV (self)->return_code;
 }
 
 gchar const*
@@ -457,9 +490,9 @@ gfc_job_new_full (gchar const     * working_folder,
 			     NULL);
 }
 
-void
+static void
 gfc_job_set_err_reader (GfcJob   * self,
-			GfcReader* reader)
+                        GfcReader* reader)
 {
 	g_return_if_fail (GFC_IS_JOB (self));
 	g_return_if_fail (!reader || GFC_IS_READER (reader));
@@ -529,3 +562,4 @@ gfc_job_set_return_code (GfcJob* self,
 	self->_private->return_code = return_code;
 }
 
+/* vim:set et sw=2 cino=t0,f0,(0,{s,>2s,n-1s,^-1s,e2s: */

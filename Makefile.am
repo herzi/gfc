@@ -17,7 +17,7 @@ pkgconfigdir=$(libdir)/pkgconfig
 pkgconfig_DATA=gfc-@MILESTONE@.pc
 
 gfc_HEADERS=\
-	gfc/gfc.h \
+	gfc.h \
 	$(NULL)
 gfcdir=$(includedir)/gfc-@MILESTONE@
 
@@ -25,7 +25,7 @@ gfc_demo_SOURCES=\
 	demo/main.c \
 	$(NULL)
 gfc_demo_CPPFLAGS=\
-	-I$(top_srcdir)/gfc \
+	-I$(top_srcdir) \
 	$(libgfc_la_CPPFLAGS) \
 	$(NULL)
 gfc_demo_LDADD=\

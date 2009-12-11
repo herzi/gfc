@@ -12,7 +12,7 @@ TESTS+=$(gfc_tests)
 libgfc_la_HEADERS=\
 	$(gfc_src_dir)/gfc-desktop.h \
 	gfc/gtk-window.h \
-	$(gfc_src_dir)/gfc-job.h \
+	gfc/job.h \
 	$(gfc_src_dir)/gfc-reader.h \
 	$(gfc_src_dir)/gfc-spawn-screen.h \
 	$(gfc_src_dir)/gfc-spawn-simple.h \
@@ -23,7 +23,7 @@ libgfc_la_HEADERS=\
 libgfc_la_SOURCES=\
 	$(libgfc_la_HEADERS) \
 	gfc/gtk-window.c \
-	$(gfc_src_dir)/gfc-job.c \
+	gfc/job.c \
 	$(gfc_src_dir)/gfc-reader.c \
 	$(gfc_src_dir)/gfc-spawn-screen.c \
 	$(gfc_src_dir)/gfc-spawn-simple.c \
