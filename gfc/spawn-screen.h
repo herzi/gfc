@@ -25,7 +25,7 @@
 #define GFC_SPAWN_SCREEN_H
 
 #include <gdk/gdk.h>
-#include <gfc-spawn-strategy.h>
+#include <gfc/spawn-strategy.h>
 
 G_BEGIN_DECLS
 

@@ -10,13 +10,13 @@ check_LTLIBRARIES+=libgfc-test.la
 TESTS+=$(gfc_tests)
 
 libgfc_la_HEADERS=\
-	$(gfc_src_dir)/gfc-desktop.h \
+	gfc/desktop.h \
 	gfc/gtk-window.h \
 	gfc/job.h \
-	$(gfc_src_dir)/gfc-reader.h \
-	$(gfc_src_dir)/gfc-spawn-screen.h \
-	$(gfc_src_dir)/gfc-spawn-simple.h \
-	$(gfc_src_dir)/gfc-spawn-strategy.h \
+	gfc/reader.h \
+	gfc/spawn-screen.h \
+	gfc/spawn-simple.h \
+	gfc/spawn-strategy.h \
 	gfc/window.h \
 	$(NULL)
 
@@ -24,10 +24,10 @@ libgfc_la_SOURCES=\
 	$(libgfc_la_HEADERS) \
 	gfc/gtk-window.c \
 	gfc/job.c \
-	$(gfc_src_dir)/gfc-reader.c \
-	$(gfc_src_dir)/gfc-spawn-screen.c \
-	$(gfc_src_dir)/gfc-spawn-simple.c \
-	$(gfc_src_dir)/gfc-spawn-strategy.c \
+	gfc/reader.c \
+	gfc/spawn-screen.c \
+	gfc/spawn-simple.c \
+	gfc/spawn-strategy.c \
 	gfc/window.c \
 	$(NULL)
 libgfc_la_CPPFLAGS=$(GFC_CFLAGS) -I$(srcdir)/$(gfc_src_dir)
@@ -35,10 +35,10 @@ libgfc_la_LIBADD=$(GFC_LIBS)
 libgfc_la_LDFLAGS=-release $(MILESTONE)
 
 if WITH_GNOME
-libgfc_la_SOURCES+=$(gfc_src_dir)/gfc-desktop-gnome.c
+libgfc_la_SOURCES+=gfc/desktop-gnome.c
 endif
 if WITH_OSX
-libgfc_la_SOURCES+=$(gfc_src_dir)/gfc-desktop-osx.m
+libgfc_la_SOURCES+=gfc/desktop-osx.m
 endif
 
 libgfc_test_la_SOURCES=\

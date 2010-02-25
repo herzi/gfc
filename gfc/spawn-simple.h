@@ -24,7 +24,7 @@
 #ifndef GFC_SPAWN_SIMPLE_H
 #define GFC_SPAWN_SIMPLE_H
 
-#include <gfc-spawn-strategy.h>
+#include <gfc/spawn-strategy.h>
 
 G_BEGIN_DECLS
 

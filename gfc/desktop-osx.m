@@ -21,7 +21,7 @@
  * USA
  */
 
-#include "gfc-desktop.h"
+#include <gfc/desktop.h>
 
 #import <AppKit/NSFont.h>
 

@@ -21,7 +21,7 @@
  * USA
  */
 
-#include "gfc-spawn-simple.h"
+#include <gfc/spawn-simple.h>
 
 /* GType Implementation */
 

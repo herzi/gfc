@@ -24,8 +24,8 @@
 #ifndef GFC_JOB_H
 #define GFC_JOB_H
 
-#include "gfc-reader.h"
-#include "gfc-spawn-strategy.h"
+#include <gfc/reader.h>
+#include <gfc/spawn-strategy.h>
 
 G_BEGIN_DECLS
 

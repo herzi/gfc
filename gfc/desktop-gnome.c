@@ -21,7 +21,7 @@
  * USA
  */
 
-#include "gfc-desktop.h"
+#include <gfc/desktop.h>
 
 #include <gconf/gconf-client.h>
 

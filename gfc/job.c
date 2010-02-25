@@ -27,7 +27,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 
-#include <gfc-spawn-simple.h>
+#include <gfc/spawn-simple.h>
 
 #define GETTEXT_PACKAGE NULL /* FIXME: this should be in the build system */
 #include <glib/gi18n-lib.h>

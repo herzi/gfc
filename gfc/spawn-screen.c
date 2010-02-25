@@ -21,7 +21,7 @@
  * USA
  */
 
-#include "gfc-spawn-screen.h"
+#include <gfc/spawn-screen.h>
 
 struct _GfcSpawnScreenPrivate {
 	GdkScreen* screen;

@@ -1,6 +1,4 @@
-*.la
-*.lo
-*.o
+*~
 *.pc
 .deps
 .libs
@@ -23,6 +21,9 @@ configure
 depcomp
 gfc-demo
 install-sh
+*.la
 libtool
+*.lo
 ltmain.sh
 missing
+*.o

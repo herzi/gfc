@@ -21,7 +21,7 @@
  * USA
  */
 
-#include "gfc-reader.h"
+#include <gfc/reader.h>
 
 struct _GfcReaderPrivate {
 	gint        file_descriptor;

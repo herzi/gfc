@@ -28,7 +28,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
-#include <gfc-reader.h>
+#include <gfc/reader.h>
 #include <gfc-test.h>
 #include <gfc-test-main.h>
 

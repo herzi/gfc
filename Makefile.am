@@ -47,7 +47,7 @@ CLEANFILES=$(pkgconfig_DATA)
 libgfc_ladir=$(gfcdir)/gfc
 
 gfc-@MILESTONE@.pc: gfc.pc Makefile
-	cmp -s $< $@ || cp $< $@
+	$(AM_V_GEN) cmp -s $< $@ || cp $< $@
 
 AM_CPPFLAGS=$(GFC_CFLAGS)
 LDADD=$(GFC_LIBS)
@@ -55,5 +55,9 @@ LDADD=$(GFC_LIBS)
 if WITH_VALGRIND
 TESTS_ENVIRONMENT=G_SLICE=always-malloc G_DEBUG=gc-friendly $(top_builddir)/libtool --mode=execute valgrind --leak-check=full -q --suppressions=$(srcdir)/glib-2.0.supp
 endif
+
+installcheck-local:
+	echo "#include <gfc.h>" | \
+		cpp -x c -o /dev/null - $(shell PKG_CONFIG_PATH="$(libdir)/pkgconfig" pkg-config --cflags gfc-@MILESTONE@)
 
 EXTRA_DIST=glib-2.0.supp

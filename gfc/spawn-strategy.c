@@ -21,7 +21,7 @@
  * USA
  */
 
-#include "gfc-spawn-strategy.h"
+#include <gfc/spawn-strategy.h>
 
 /* GType Implementation */
 
