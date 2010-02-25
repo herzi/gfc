@@ -1,4 +1,4 @@
-AC_INIT(gfc,0.0.2,mailto:herzi@gnome-de.org)
+AC_INIT(gfc,0.0.3,mailto:herzi@gnome-de.org)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
