@@ -1,9 +1,6 @@
 /* This file is part of libgfc
  *
- * AUTHORS
- *     Sven Herzberg  <sven@imendio.com>
- *
- * Copyright (C) 2007, 2008  Sven Herzberg
+ * Copyright (C) 2007,2008,2010  Sven Herzberg
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -49,6 +46,7 @@ gboolean      gfc_job_get_exited         (GfcJob const    * self);
 GfcReader*    gfc_job_get_out_reader     (GfcJob const    * self);
 GPid          gfc_job_get_pid            (GfcJob const    * self);
 gint          gfc_job_get_return_code    (GfcJob const    * self);
+gint          gfc_job_get_signal         (GfcJob const    * self);
 gchar const*  gfc_job_get_working_folder (GfcJob const    * self);
 gboolean      gfc_job_kill               (GfcJob          * self);
 GfcJob*       gfc_job_new                (gchar const     * working_folder,

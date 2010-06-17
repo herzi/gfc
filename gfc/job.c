@@ -1,9 +1,6 @@
 /* This file is part of libgfc
  *
- * AUTHORS
- *     Sven Herzberg  <sven@imendio.com>
- *
- * Copyright (C) 2007,2008  Sven Herzberg
+ * Copyright (C) 2007,2008,2010  Sven Herzberg
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -43,27 +40,29 @@ typedef enum {
  * depend on the status. Instead, there should be a status_data union (which
  * basically works like GdkEvent. */
 
-struct _GfcJobPrivate {
-	/* state indicating the object's state */
-	GfcJobState       state;
+struct _GfcJobPrivate
+{
+  /* state indicating the object's state */
+  GfcJobState       state;
 
-	/* data for GFC_JOB_SETUP (also valid later) */
-	gchar           * working_folder;
-	gchar           **argv;
+  /* data for GFC_JOB_SETUP (also valid later) */
+  gchar           * working_folder;
+  gchar           **argv;
 
-	/* data for GFC_JOB_SETUP only */
-	GfcSpawnStrategy* spawn;
+  /* data for GFC_JOB_SETUP only */
+  GfcSpawnStrategy* spawn;
 
-	/* data for GFC_JOB_EXECUTE */
-	GfcReader       * err_reader;
-	GfcReader       * out_reader;
-	GPid              pid;
-	guint             child_watch_tag;
+  /* data for GFC_JOB_EXECUTE */
+  GfcReader       * err_reader;
+  GfcReader       * out_reader;
+  GPid              pid;
+  guint             child_watch_tag;
 
-	/* data for GFC_JOB_DONE */
-	gint              return_code;
-	guint             exited : 1;
-        GError          * error;
+  /* data for GFC_JOB_DONE */
+  gint              return_code;
+  gint              signal;
+  guint             exited : 1;
+  GError          * error;
 };
 
 #define PRIV(i) (((GfcJob*)(i))->_private)
@@ -94,16 +93,19 @@ gfc_job_init (GfcJob* self)
   PRIV (self) = G_TYPE_INSTANCE_GET_PRIVATE (self, GFC_TYPE_JOB, GfcJobPrivate);
   PRIV (self)->state = GFC_JOB_SETUP;
   PRIV (self)->return_code = -1;
+  PRIV (self)->signal = -1;
   PRIV (self)->exited = FALSE;
 }
 
 static void
 job_set_status (GfcJob  * self,
                 gint      return_code,
+                gint      signal,
                 gboolean  exited)
 {
   gfc_job_set_return_code (GFC_JOB (self), return_code);
   gfc_job_set_exited      (GFC_JOB (self), exited);
+  PRIV (self)->signal = signal;
 
   /* usually the application code will unref() the job in the done signal handler */
   g_object_ref (self);
@@ -118,18 +120,19 @@ job_set_status (GfcJob  * self,
 
 static void
 job_child_watch_cb (GPid     pid,
-		    gint     status,
-		    gpointer data)
+                    gint     status,
+                    gpointer data)
 {
-	GfcJob* self = GFC_JOB (data);
+  GfcJob* self = GFC_JOB (data);
 
-	g_spawn_close_pid (pid);
-	gfc_job_set_pid (GFC_JOB (self),
-			 0);
+  g_spawn_close_pid (pid);
+  gfc_job_set_pid (GFC_JOB (self),
+                   0);
 
-	job_set_status (self,
-			WEXITSTATUS (status),
-			WIFEXITED (status));
+  job_set_status (self,
+                  WEXITSTATUS (status),
+                  WIFSIGNALED (status) ? WTERMSIG (status) : -1,
+                  WIFEXITED (status));
 }
 
 static gboolean
@@ -426,9 +429,9 @@ gfc_job_get_out_reader (GfcJob const* self)
 GPid
 gfc_job_get_pid (GfcJob const* self)
 {
-	g_return_val_if_fail (GFC_IS_JOB (self), 0);
+  g_return_val_if_fail (GFC_IS_JOB (self), 0);
 
-	return self->_private->pid;
+  return PRIV (self)->pid;
 }
 
 gint
@@ -438,6 +441,15 @@ gfc_job_get_return_code (GfcJob const* self)
   g_return_val_if_fail (PRIV (self)->state == GFC_JOB_DONE, -1);
 
   return PRIV (self)->return_code;
+}
+
+gint
+gfc_job_get_signal (GfcJob const* self)
+{
+  g_return_val_if_fail (GFC_IS_JOB (self), -1);
+  g_return_val_if_fail (PRIV (self)->state == GFC_JOB_DONE, -1);
+
+  return PRIV (self)->signal;
 }
 
 gchar const*
@@ -463,7 +475,7 @@ gfc_job_kill (GfcJob* self)
 		gfc_job_set_pid (GFC_JOB (self), 0);
 		/* FIXME: I actually think that this should be triggered by the
 		 * child watch anyways - test case needed */
-		job_set_status (self, 1, FALSE); // FIXME: maybe add is_killed()
+		job_set_status (self, 1, -1, FALSE); // FIXME: maybe add is_killed()
 		return TRUE;
 	}
 }
